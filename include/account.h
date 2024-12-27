@@ -3,14 +3,27 @@
 
 #include "transaction.h"
 
+typedef enum
+{
+    SUCCESS,
+    FAILED
+} SuccessMessage;
+
 class Account
 {
     std::string accountNumber;
     float balance;
 
 public:
-    Account();
-    
+    Account(std::string accountNumber);
+    ~Account();
+    void setAccountNumber(std::string accountNumber);
+    SuccessMessage updateBalance(float amount);
+
+    std::string getAccountNumber();
+    float getBalance();
+
+    void closeAccount();
 };
 
 #endif
