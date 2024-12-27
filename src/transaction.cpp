@@ -1,7 +1,14 @@
 #include "../include/transaction.h"
 #include <string>
 
-Transaction::Transaction(float amount, std::string date, std::string ID, std::string accountNumber)
+Transaction::Transaction()
+{
+    setAmount("N/F");
+    setDate("N/F");
+    setAccountNumber("N/F");
+    setID("N/F");
+}
+Transaction::Transaction(std::string amount, std::string date, std::string ID, std::string accountNumber)
 {
     setAmount(amount);
     setDate(date);
@@ -14,9 +21,9 @@ void Transaction::setAccountNumber(std::string accountNumber)
     this->accountNumber = accountNumber;
 }
 
-void Transaction::setAmount(float amount)
+void Transaction::setAmount(std::string amount)
 {
-    this->amount = std::to_string(amount);
+    this->amount = amount;
 }
 
 void Transaction::setDate(std::string date)

@@ -9,19 +9,18 @@
 class TransactionStorage
 {
     std::vector<Transaction> transactions;
-    static int transactionCount;
+    int transactionCount;
+    int transactionLimit;
     // CacheLRU
 
 public:
     TransactionStorage();
-    void addTransaction(float amount, std::string accountNumber);
-    void addTransaction(std::string unformattedString);
-    std::vector<Transaction>& getTransactions();
-    std::vector<Transaction*> getTransactions(std::string accountNumber);
-    Transaction* getTransaction(std::string transactionID);
-
+    void addTransaction(std::string amount, std::string accountNumber);
+    std::vector<Transaction> getTransactions(std::string accountNumber);
+    Transaction getTransaction(std::string transactionID);
+    Transaction formatTransaction(std::string unformattedString);
     void readTransactionsFromFile();
-    void writeTransactionsToFile();
+    void writeTransactionToFile(Transaction& transaction);
 };
 
 #endif
