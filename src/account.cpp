@@ -29,6 +29,7 @@ SuccessMessage Account::updateBalance(float amount)
         return FAILED;
     }
 
+
     this->balance -= amount;
     return SUCCESS;
 }

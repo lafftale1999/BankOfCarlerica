@@ -1,7 +1,7 @@
 #ifndef ACCOUNT_H
 #define ACCOUNT_H
 
-#include "transaction.h"
+#include "transactionStorage.h"
 
 typedef enum
 {
