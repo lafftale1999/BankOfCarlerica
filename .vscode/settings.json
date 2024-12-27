@@ -60,5 +60,12 @@
         "optional": "cpp",
         "sstream": "cpp",
         "fstream": "cpp"
-    }
+    },
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "c:\\Users\\prett\\Desktop\\dev\\BankOfCarlerica",
+            "binaryPath": "c:\\Users\\prett\\Desktop\\dev\\BankOfCarlerica\\main.exe",
+            "binaryArgs": []
+        }
+    ]
 }

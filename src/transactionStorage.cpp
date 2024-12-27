@@ -3,25 +3,35 @@
 #include <string>
 #include <fstream>
 #include <thread>
-
-int TransactionStorage::transactionCount = 0;
-
+#include <iomanip>
+#include <sstream>
+#include <ctime>
 TransactionStorage::TransactionStorage()
-{
+{   
+    transactionCount = 0;
     readTransactionsFromFile();
+    transactionLimit = 100000000;
 }
 
-void TransactionStorage::addTransaction(float amount, std::string accountNumber)
+void TransactionStorage::addTransaction(std::string amount, std::string accountNumber)
 {
-    std::chrono::time_point t = std::chrono::system_clock::now();
-    std::string date = std::to_string(std::chrono::system_clock::to_time_t(t));
+    std::time_t now = std::time(nullptr);
+    std::tm localTime = *std::localtime(&now);
 
-    this->transactions.emplace_back(amount, date, std::to_string(transactionCount++), accountNumber);
+    std::ostringstream dateTimeStream;
+    dateTimeStream << std::put_time(&localTime, "%Y-%m-%d %H:%M:%S");
+
+    std::string ID = std::string(std::to_string(transactionLimit).length() - std::to_string(transactionCount).length(), '0') + std::to_string(transactionCount);
+    
+    Transaction transaction(amount, dateTimeStream.str(), ID, accountNumber);
+    writeTransactionToFile(transaction);
+
+    transactionCount++;
 }
 
-void TransactionStorage::addTransaction(std::string unformattedString)
+Transaction TransactionStorage::formatTransaction(std::string unformattedString)
 {
-    std::vector<std::string> details;
+    std::vector<std::string> details(4);
     // [0] = ID
     // [1] = AccountNumber
     // [2] = Date
@@ -29,7 +39,7 @@ void TransactionStorage::addTransaction(std::string unformattedString)
 
     int index = 0;
 
-    for(int i = 0; i < unformattedString.length(); i++)
+    for(size_t i = 0; i < unformattedString.length(); i++)
     {
         if(unformattedString[i] != ',')
         {
@@ -39,42 +49,62 @@ void TransactionStorage::addTransaction(std::string unformattedString)
         index++;
     }
 
-    this->transactions.emplace_back(details[3], details[2], details[0], details[1]);
-    transactionCount++;
+    Transaction transaction(details.at(3), details[2], details[0], details[1]);
+    
+    return transaction;
 }
 
-std::vector<Transaction>& TransactionStorage::getTransactions()
+Transaction TransactionStorage::getTransaction(std::string transactionID)
 {
-    return this->transactions;
-}
+    std::string temp;
+    bool isFound = false;
 
-std::vector<Transaction*> TransactionStorage::getTransactions(std::string accountNumber)
-{
-    std::vector<Transaction*> temp;
+    std::ifstream file(TRANSACTIONS_PATH);
 
-    for(Transaction &transaction : this->transactions)
+    if(!file.is_open())
     {
-        if(transaction.getAccountNumber() == accountNumber) temp.push_back(&transaction);
+        std::cout << "File does not exist: " << TRANSACTIONS_PATH << std::endl;
+        throw;
     }
 
-    return temp;
-}
-
-Transaction* TransactionStorage::getTransaction(std::string transactionID)
-{
-    int s = 0;
-    int e = this->transactions.size() - 1;
-
-    while(s <= e)
+    while(std::getline(file, temp))
     {
-        int mid = (s + e) / 2;
-
-        if(this->transactions[mid].getID() == transactionID) return &this->transactions[mid];
-        else if(transactionID < this->transactions[mid].getID()) e = mid - 1;
-        else s = mid + 1;
+        if(temp.find(transactionID) != std::string::npos) 
+        {
+            isFound = true;
+            break;
+        }
     }
 
-    return nullptr;
+    switch(isFound)
+    {
+        case true:
+            return Transaction(formatTransaction(temp));
+
+        default:
+            return Transaction();
+    }
+}
+
+std::vector<Transaction> TransactionStorage::getTransactions(std::string accountNumber)
+{
+    std::vector<Transaction> transactionList;
+
+    std::string tempString;
+    std::ifstream file(TRANSACTIONS_PATH);
+
+    while(std::getline(file, tempString))
+    {
+        if(tempString.find(accountNumber) != std::string::npos)
+        {
+            std::cout << "String found: " << tempString << std::endl;
+            transactionList.push_back(formatTransaction(tempString));
+        }
+    }
+
+    file.close();
+
+    return transactionList;
 }
 
 void TransactionStorage::readTransactionsFromFile()
@@ -93,7 +123,7 @@ void TransactionStorage::readTransactionsFromFile()
 
     while(std::getline(file, temp))
     {
-        addTransaction(temp);
+        transactionCount++;
     }
 
     file.close();
@@ -103,12 +133,9 @@ void TransactionStorage::readTransactionsFromFile()
     std::this_thread::sleep_for(std::chrono::seconds(2));
 }
 
-void TransactionStorage::writeTransactionsToFile()
+void TransactionStorage::writeTransactionToFile(Transaction& transaction)
 {   
-    auto start = std::chrono::high_resolution_clock::now();
-    std::cout << "WRITING TO FILE" << std::endl;
-
-    std::ofstream file(TRANSACTIONS_PATH);
+    std::ofstream file(TRANSACTIONS_PATH, std::ios::app);
 
     if(!file.is_open())
     {
@@ -116,14 +143,7 @@ void TransactionStorage::writeTransactionsToFile()
         return;
     }
 
-    for(Transaction &transaction : this->transactions)
-    {
-        file << transaction.getID() + "," + transaction.getAccountNumber() + "," + transaction.getDate() + "," + transaction.getAmount() << std::endl;
-    }
-
+    file << transaction.getID() + ',' + transaction.getAccountNumber() + ',' + transaction.getDate() + ',' + transaction.getAmount() + ',' << std::endl;
+    
     file.close();
-
-    auto end = std::chrono::high_resolution_clock::now();
-    std::cout << "WRITING TO FILE TOOK " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << " milliseconds" << std::endl;
-    std::this_thread::sleep_for(std::chrono::seconds(2));
 }

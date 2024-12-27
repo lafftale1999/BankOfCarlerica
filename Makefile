@@ -1,7 +1,8 @@
 PROG = main.exe 
-SRC = main.cpp
+SRC = main.cpp src/transaction.cpp src/transactionStorage.cpp
 CFLAGS = -g -Wall -Werror
-LIBS = 
+LIBS =
+CC = g++
 
 all: $(PROG)
 

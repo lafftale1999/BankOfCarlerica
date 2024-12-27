@@ -6,6 +6,10 @@
 class Account
 {
     std::string accountNumber;
+    float balance;
+
+public:
+    Account();
     
 };
 
