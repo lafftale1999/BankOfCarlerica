@@ -59,7 +59,9 @@
         "iomanip": "cpp",
         "optional": "cpp",
         "sstream": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "map": "cpp",
+        "xtree": "cpp"
     },
     "makefile.launchConfigurations": [
         {

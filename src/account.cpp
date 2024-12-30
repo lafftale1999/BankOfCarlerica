@@ -1,13 +1,20 @@
 #include "../include/account.h"
+#include <string>
+
+Account::Account(){}
 
 Account::Account(std::string accountNumber)
 {
-    srand(time(NULL));
-
     int rnd = (rand() % 100) * 1000;
 
     this->balance = (float)rnd;
     setAccountNumber(accountNumber);
+}
+
+Account::Account(std::string accountNumber, std::string balance)
+{
+    setAccountNumber(accountNumber);
+    this->balance = std::stof(balance);
 }
 
 Account::~Account()
@@ -30,6 +37,9 @@ SuccessMessage Account::updateBalance(float amount)
     }
 
     this->balance -= amount;
+    TransactionLink transactionLink;
+    transactionLink.addTransaction(std::to_string(amount), this->accountNumber);
+
     return SUCCESS;
 }
 
@@ -41,6 +51,15 @@ std::string Account::getAccountNumber()
 float Account::getBalance()
 {
     return this->balance;
+}
+
+std::vector<Transaction> Account::getTransactionHistory()
+{
+    TransactionLink tsLink(this->accountNumber);
+    
+    this->transactionHistory = tsLink.getCurrentTransactions();
+
+    return this->transactionHistory;
 }
 
 void Account::closeAccount()

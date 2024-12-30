@@ -3,11 +3,12 @@
 
 Transaction::Transaction()
 {
-    setAmount("N/F");
-    setDate("N/F");
-    setAccountNumber("N/F");
-    setID("N/F");
+    setAmount("");
+    setDate("");
+    setAccountNumber("");
+    setID("");
 }
+
 Transaction::Transaction(std::string amount, std::string date, std::string ID, std::string accountNumber)
 {
     setAmount(amount);
