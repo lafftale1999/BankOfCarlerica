@@ -5,13 +5,12 @@ Client::Client(std::string clientID)
 
 }
 
-Client::Client(std::string clientID, std::string firstName, std::string lastName, std::vector<std::string> accounts)
+Client::Client(std::string clientID, std::string firstName, std::string lastName, std::string accounts)
 {
     setClientID(clientID);
     setFirstName(firstName);
     setLastName(lastName);
-    
-    for(auto a : accounts) addAccount(a);
+    addAccount(accounts);
 }
 
 void Client::removeClient()
@@ -38,7 +37,16 @@ void Client::setLastName(std::string lastName)
 
 void Client::addAccount(std::string account)
 {
-    this->accounts.push_back(account);
+    std::string temp;
+    for(int i = 0; i < account.length(); i++)
+    {
+        if(account[i] != '|' && account[i] != ',') temp.push_back(account[i]);
+        else
+        {
+            this->accounts.push_back(temp);
+            temp = "";
+        }
+    }
 }
 
 std::string Client::getClientId()
