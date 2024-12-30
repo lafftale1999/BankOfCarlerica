@@ -13,7 +13,7 @@ class Client
 
 public:
     Client(std::string clientID);
-    Client(std::string clientID, std::string firstName, std::string lastName, std::vector<std::string> accounts);
+    Client(std::string clientID, std::string firstName, std::string lastName, std::string accounts);
     
     void removeClient();
     void setClientID(std::string clientID);

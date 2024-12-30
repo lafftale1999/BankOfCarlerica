@@ -106,6 +106,7 @@ void AccountStorage::writeAccountsToFile()
 
     for(auto a : accounts)
     {
+        if(a.second.getAccountNumber().empty()) continue;
         file << a.second.getAccountNumber() << "," << a.second.getBalance() << std::endl;
     }
 
