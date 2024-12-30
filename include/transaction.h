@@ -2,8 +2,9 @@
 #define TRANSACTION_H
 
 #include <iostream>
+#include "cacheRequirements.h"
 
-class Transaction
+class Transaction : public CacheRequirements
 {
     std::string accountNumber;
     std::string amount;
@@ -21,7 +22,7 @@ public:
     std::string getAccountNumber();
     std::string getAmount();
     std::string getDate();
-    std::string getID();
+    std::string getID() override;
 };
 
 #endif
