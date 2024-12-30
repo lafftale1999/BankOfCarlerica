@@ -77,7 +77,11 @@ Transaction TransactionLink::formatTransaction(std::string unformattedString)
 }
 
 Transaction TransactionLink::getTransaction(std::string transactionID)
-{
+{   
+    Transaction* transaction = transactionCache.searchCache(transactionID);
+
+    if(transaction) return *transaction;
+
     std::string temp;
     bool isFound = false;
 
@@ -98,14 +102,14 @@ Transaction TransactionLink::getTransaction(std::string transactionID)
         }
     }
 
-    switch(isFound)
+    if(isFound)
     {
-        case true:
-            return Transaction(formatTransaction(temp));
-
-        default:
-            return Transaction();
+        Transaction t = formatTransaction(temp);
+        transactionCache.addToCache(t);
+        return t;
     }
+
+    return Transaction();
 }
 
 std::vector<Transaction> TransactionLink::getTransactions(std::string accountNumber)
@@ -120,7 +124,9 @@ std::vector<Transaction> TransactionLink::getTransactions(std::string accountNum
         if(tempString.find(accountNumber) != std::string::npos)
         {
             std::cout << "String found: " << tempString << std::endl;
-            transactionList.push_back(formatTransaction(tempString));
+            Transaction t(formatTransaction(tempString));
+            transactionList.push_back(t);
+            transactionCache.addToCache(t);
         }
     }
 

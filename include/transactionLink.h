@@ -2,6 +2,7 @@
 #define TRANSACTION_STORAGE_H
 
 #include "transaction.h"
+#include "cache.h"
 #include <vector>
 
 #define TRANSACTIONS_PATH "data/transactions/transactions.txt"
@@ -11,7 +12,7 @@ class TransactionLink
     std::vector<Transaction> currentTransactions;
     static int transactionCount;
     static int transactionLimit;
-    // CacheLRU
+    CacheLRU<Transaction,10> transactionCache;
 
 public:
     TransactionLink();
