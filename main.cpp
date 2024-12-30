@@ -1,18 +1,10 @@
 #include "include/accountStorage.h"
+#include "include/client.h"
 
 int main(void)
 {
+    // needed for seeding rng
     srand(time(NULL));
-
-    int amount = 100;
-
-    AccountStorage as(amount);
-    TransactionLink ts(amount);
-
-    for(auto t : as.getMap()["099"].getTransactionHistory())
-    {
-        std::cout << t.getAmount() << " was transferred " << t.getDate() << " by account " << t.getAccountNumber() << std::endl;
-    }
 
     return 0;
 }
