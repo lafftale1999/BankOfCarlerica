@@ -2,9 +2,12 @@
 #include <string>
 #include <fstream>
 
+ClientStorage::ClientStorage(){};
+
 ClientStorage::ClientStorage(int maxLimit)
 {
     this->maxLimit = maxLimit;
+    loadClientsFromFile();
 }
 
 ClientStorage::~ClientStorage()
@@ -14,7 +17,7 @@ ClientStorage::~ClientStorage()
 
 void ClientStorage::addClient(std::string firstName, std::string lastName, std::vector<std::string> accounts)
 {
-    if(clients.size() < maxLimit)
+    if(clients.size() < (size_t)maxLimit)
     {
         std::string id = std::string(std::to_string(this->maxLimit).length() - std::to_string(this->clients.size()).length(), '0') + std::to_string(clients.size());
 
@@ -61,20 +64,18 @@ void ClientStorage::loadClientsFromFile()
         return;
     }
 
-    std::vector<std::string> temp;
-    // 0 = id
-    // 1 = firstName
-    // 2 = lastName
-    // 3 = accounts
-
     std::string tempString;
-    int index;
+    int index = 0;
 
-    while(std::getline(file, tempString) && clients.size() < maxLimit)
+    while(std::getline(file, tempString))
     {
-        for(auto t : temp) t = "";
+        std::vector<std::string> temp(4);
+        // 0 = id
+        // 1 = firstName
+        // 2 = lastName
+        // 3 = accounts
 
-        for(int i = 0; i < tempString.length(); i++)
+        for(size_t i = 0; i < tempString.length(); i++)
         {
             if(tempString[i] == ',')
             {
@@ -84,6 +85,9 @@ void ClientStorage::loadClientsFromFile()
 
             temp[index].push_back(tempString[i]);
         }
+
+        std::string accounts = temp[3];
+        
         // 0 = id | 1 = fname | 2 = lname | 3 = accounts
         clients.emplace_back(temp[0], temp[1], temp[2], temp[3]);
         index = 0;
@@ -108,7 +112,7 @@ void ClientStorage::saveClientsToFile()
 
         file << c.getClientId() + ',' + c.getFirstName() + ',' + c.getLastName() + ',';
 
-        for(int i = 0; i < c.getAccounts().size(); i++)
+        for(size_t i = 0; i < c.getAccounts().size(); i++)
         {
             if(i == c.getAccounts().size() - 1) file << c.getAccounts()[i] + ',';
             else file << c.getAccounts()[i] + '|';
@@ -116,4 +120,6 @@ void ClientStorage::saveClientsToFile()
 
         file << std::endl;
     }
+
+    file.close();
 }

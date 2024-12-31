@@ -13,6 +13,18 @@ Client::Client(std::string clientID, std::string firstName, std::string lastName
     addAccount(accounts);
 }
 
+Client::Client(std::string clientID, std::string firstName, std::string lastName, std::vector<std::string> accounts)
+{
+    setClientID(clientID);
+    setFirstName(firstName);
+    setLastName(lastName);
+    
+    for(auto a : accounts)
+    {
+        this->accounts.push_back(a);
+    }
+}
+
 void Client::removeClient()
 {
     setFirstName("Closed");
@@ -38,9 +50,16 @@ void Client::setLastName(std::string lastName)
 void Client::addAccount(std::string account)
 {
     std::string temp;
-    for(int i = 0; i < account.length(); i++)
+    for(size_t i = 0; i < account.length(); i++)
     {
-        if(account[i] != '|' && account[i] != ',') temp.push_back(account[i]);
+        if(account[i] != '|' && account[i] != ',')
+        {
+            temp.push_back(account[i]);
+            
+            if(i == account.length() - 1) 
+                this->accounts.push_back(temp);
+        }
+
         else
         {
             this->accounts.push_back(temp);
