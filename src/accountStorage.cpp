@@ -3,6 +3,8 @@
 #include <fstream>
 #include <chrono>
 
+AccountStorage::AccountStorage(){}
+
 AccountStorage::AccountStorage(int accountLimit)
 {
     this->accountLimit = accountLimit;
@@ -14,14 +16,16 @@ AccountStorage::~AccountStorage()
     writeAccountsToFile();
 }
 
-void AccountStorage::createAccount()
+std::string AccountStorage::createNewAccount()
 {
-    if(accounts.size() >= (size_t)accountLimit) throw "AccountStorage is full";
+    if(accounts.size() >= (size_t)accountLimit) return "";
 
     std::string accountNumber = std::to_string(this->accounts.size());
     accountNumber = std::string(std::to_string(accountLimit).length() - std::to_string(this->accounts.size()).length(), '0') + std::to_string(this->accounts.size());
 
     accounts[accountNumber] = Account(accountNumber);
+
+    return accountNumber;
 }
 
 void AccountStorage::addAccount(std::string accountNumber, std::string balance)

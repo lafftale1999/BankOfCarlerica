@@ -11,6 +11,7 @@ class ClientStorage
     int maxLimit;
 
 public:
+    ClientStorage();
     ClientStorage(int maxLimit);
     ~ClientStorage();
 

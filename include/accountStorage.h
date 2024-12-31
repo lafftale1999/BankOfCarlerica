@@ -13,10 +13,11 @@ class AccountStorage
     int accountLimit;
 
 public:
+    AccountStorage();
     AccountStorage(int accountLimit);
     ~AccountStorage();
     void addAccount(std::string accountNumber, std::string balance);
-    void createAccount();
+    std::string createNewAccount();
     void removeAccount(std::string accountNumber);
     Account& findAccount(std::string accountNumber);
 
