@@ -5,10 +5,9 @@ Account::Account(){}
 
 Account::Account(std::string accountNumber)
 {
-    int rnd = (rand() % 100) * 1000;
-
-    this->balance = (float)rnd;
     setAccountNumber(accountNumber);
+    int rnd = (rand() % 100) * 1000;
+    updateBalance(rnd);
 }
 
 Account::Account(std::string accountNumber, std::string balance)
@@ -30,13 +29,13 @@ void Account::setAccountNumber(std::string accountNumber)
 
 SuccessMessage Account::updateBalance(float amount)
 {
-    if((this->balance - amount) < 0)
+    if((this->balance + amount) < 0)
     {
         std::cout << "Unable to withdraw " << amount << "kr from this account with " << this->balance << "kr!" << std::endl;
         return FAILED;
     }
 
-    this->balance -= amount;
+    this->balance += amount;
     TransactionLink transactionLink;
     transactionLink.addTransaction(std::to_string(amount), this->accountNumber);
 

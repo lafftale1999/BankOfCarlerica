@@ -5,11 +5,12 @@ int main(void)
     // needed for seeding rng
     srand(time(NULL));
 
-    /* {
-        GenerateClients gen(100);
-    } */
+    {
+        GenerateClients gen(10);
+    }
 
-    Bank bank(100);
+    std::cout << "here" << std::endl;
+    /* Bank bank(100);
 
     int ci = 26;
     std::string firstName = bank.getClients()->getClients()[ci].getFirstName();
@@ -22,7 +23,7 @@ int main(void)
     {
         std::cout << bank.getAccounts()->findAccount(account).getAccountNumber() << ": ";
         std::cout << bank.getAccounts()->findAccount(account).getBalance() << "kr " <<std::endl;
-    }
+    } */
     
     
     return 0;
