@@ -2,25 +2,44 @@
 #include "include/bankQueue.h"
 #include "include/threadPool.h"
 
-std::mutex cout_mtx;
-
-#define SAFE_COUT(x) \
-    { \
-        std::lock_guard<std::mutex> lock(cout_mtx); \
-        std::cout <<std::endl << x << std::endl; \
-    }
-
 int main(void)
 {
     ThreadPool pool(std::thread::hardware_concurrency());
 
-    for(int i = 0; i < 8; i++)
-    {
-        pool.enqueue([&] {
-            std::cout << i << std::endl;
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-        });
-    }
+    BankQueue<int,10> queue;
+
+    // Add people to queue
+    pool.enqueue([&queue] {
+        while(queue.isRunning())
+        {
+            int rnd = rand() % 100;
+            queue.enqueue(rnd);
+
+            std::cout << "Added " << rnd << " from queue" << std::endl;
+
+            std::this_thread::sleep_for(std::chrono::seconds(1));            
+        }
+    });
+
+    // Remove people from queue
+    pool.enqueue([&queue] {
+        while(queue.isRunning())
+        {
+            auto item = queue.dequeue();
+            if(item)
+            {
+                std::cout << "Removed " << *item << " from queue" << std::endl;
+            }
+
+            std::this_thread::sleep_for(std::chrono::seconds(2));
+        }
+    });
+
+    // Condition to finish queue
+    pool.enqueue([&queue] {
+        std::this_thread::sleep_for(std::chrono::seconds(20));
+        queue.stopQueue();
+    });
 
     return 0;
 }

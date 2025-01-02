@@ -20,27 +20,23 @@ class ThreadPool
     std::atomic<bool> stop;
 
 public:
-    ThreadPool(size_t numThreads): stop(false)
+    ThreadPool(size_t numThreads) : stop(false)
     {
-        for(size_t i = 0; i < numThreads; i++)
+        for (size_t i = 0; i < numThreads; ++i)
         {
-            workers.emplace_back([this]
+            workers.emplace_back([this, i]
             {
-                while(1)
+                while (true)
                 {
-                    std::unique_lock<std::mutex> lock(mtx);
-                    cv.wait(lock, [this]
+                    std::function<void()> task;
                     {
-                        return stop || !tasks.empty();
-                    });
+                        std::unique_lock<std::mutex> lock(mtx);
+                        cv.wait(lock, [this] { return stop || !tasks.empty(); });
+                        if (stop && tasks.empty()) return;
 
-                    if(stop && tasks.empty()) return;
-
-                    auto task = std::move(tasks.front());
-                    tasks.pop();
-
-                    lock.unlock();
-
+                        task = std::move(tasks.front());
+                        tasks.pop();
+                    }
                     task();
                 }
             });
