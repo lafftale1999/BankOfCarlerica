@@ -123,3 +123,8 @@ void ClientStorage::saveClientsToFile()
 
     file.close();
 }
+
+int ClientStorage::getMaxLimit()
+{
+    return this->maxLimit;
+}
