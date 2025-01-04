@@ -14,18 +14,12 @@ ClientStorage::ClientStorage(int maxLimit)
     if(clients.size() > 0)
     {
         padding = clients[0].getClientId().length();
-        std::cout << "CLIENT PADDING = " << padding << std::endl;
-        std::cout << "First client id = " << clients[0].getClientId() << std::endl;
-        std::cout << "CLIENTS LOADED" << std::endl;
     }
 
     else
     {
         padding = std::to_string(maxLimit).length();
-        std::cout << "CLIENT PADDING = " << padding << std::endl;
     }
-
-    std::this_thread::sleep_for(std::chrono::seconds(5));
 }
 
 ClientStorage::~ClientStorage()
@@ -51,6 +45,9 @@ void ClientStorage::addClient(std::string firstName, std::string lastName, std::
 
 Client* ClientStorage::findClient(std::string clientID)
 {
+    std::cout << "Looking for client" << std::endl;
+    auto begin = std::chrono::high_resolution_clock::now();
+
     int s = 0;
     int e = this->clients.size() - 1;
 
@@ -60,7 +57,15 @@ Client* ClientStorage::findClient(std::string clientID)
     {
         c = (s + e) / 2;
 
-        if(clientID == clients[c].getClientId()) return &clients[c];
+        if(clientID == clients[c].getClientId())
+        {
+            auto end = std::chrono::high_resolution_clock::now();
+            std::cout << "Finding client took: " << std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() << " nanoseconds" << std::endl;
+            std::this_thread::sleep_for(std::chrono::seconds(2));
+
+            return &clients[c];
+        }
+
         else if(clientID < clients[c].getClientId()) e = c - 1;
         else if(clientID > clients[c].getClientId()) s = c + 1;
     }

@@ -13,15 +13,11 @@ AccountStorage::AccountStorage(int accountLimit)
     if(accounts.size() > 0)
     {
         padding = accounts["00000000"].getAccountNumber().length();
-        std::cout << accounts["00000000"].getAccountNumber() << std::endl;
     }
     else
     {
         padding = std::to_string(accountLimit).length();
-        std::cout << padding << std::endl;
     }
-
-    std::cout << "ACCOUNTS LOADED" << std::endl;
 }
 
 AccountStorage::~AccountStorage()

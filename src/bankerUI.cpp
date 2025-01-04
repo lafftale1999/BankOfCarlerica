@@ -184,7 +184,8 @@ void showAccount(int index, Bank *bank)
     {
         {0,{"Show transactions", SHOW_TRANSACTIONS}},
         {1,{"Update balance", UPDATE_BALANCE}},
-        {2,{"Back", CHECK_ACCOUNT}}
+        {2,{"Close Account", CLOSE_ACCOUNT}},
+        {3,{"Back", CHECK_ACCOUNT}}
     };
 
     std::string accountNumber = bank->getCurrentClient()->getAccounts()[index];
@@ -209,6 +210,14 @@ void showAccount(int index, Bank *bank)
             case UPDATE_BALANCE:
                 updateBalance(&currentAccount);
                 continue;
+            
+            case CLOSE_ACCOUNT:
+                bank->getCurrentClient()->removeAccount(currentAccount.getAccountNumber());
+                currentAccount.~Account();
+
+                std::cout << "Account closed!" << std::endl;
+                std::this_thread::sleep_for(std::chrono::seconds(2));
+                return;
 
             case CHECK_ACCOUNT:
                 return;
@@ -223,7 +232,7 @@ void showTransactions(Account* account)
 {
     printMenu(
         "SHOW TRANSACTIONS",
-        "Account: " + account->getAccountNumber() + " with a balance of " + std::to_string(account->getBalance()) + "kr. Press Enter to go back!"
+        "Account: " + account->getAccountNumber() + " with a balance of " + std::to_string(account->getBalance()) + "kr. Enter (x) to go back!"
     );
 
     for(auto t : account->getTransactionHistory())
@@ -239,7 +248,7 @@ void updateBalance(Account* account)
 {
     printMenu(
         "UPDATE BALANCE",
-        "Account: " + account->getAccountNumber() + " with a balance of " + std::to_string(account->getBalance()) + "kr.\n Enter the amount to update or 0 and enter to go back"
+        "Account: " + account->getAccountNumber() + " with a balance of " + std::to_string(account->getBalance()) + "kr.\nEnter the amount to update or 0 and enter to go back"
     );
 
     float userInput = 0;
@@ -320,18 +329,17 @@ MenuNavigation getUserInput(std::map<int, std::pair<std::string, MenuNavigation>
 
     while(true)
     {
-        // Läs in användarens val
         std::cin >> userChoice;
 
-        // Kontrollera om inmatningen är ogiltig
-        if (std::cin.fail()) {
-            std::cin.clear(); // Rensa fel-flaggor
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignorera felaktig inmatning
+        // IF USER PUT IN NON NUMERIC SYMBOLS
+        if (std::cin.fail()) 
+        {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cout << "Invalid input. Please enter a valid integer." << std::endl;
             continue;
         }
 
-        // Kontrollera om inmatningen är inom de tillåtna gränserna
         if (userChoice < 0 || (size_t)userChoice >= menuOptions.size()) {
             std::cout << "Please enter a number between 0 and " << menuOptions.size() - 1 << "." << std::endl;
             continue;
@@ -349,22 +357,20 @@ int getUserInputInt(std::map<int, std::pair<std::string, MenuNavigation>> menuOp
     {
 
         std::cin >> userChoice;
-        
-        // Kontrollera om inmatningen är ogiltig
+
+        // IF USER PUT IN NON NUMERIC SYMBOLS
         if (std::cin.fail()) {
-            std::cin.clear(); // Rensa fel-flaggor
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignorera felaktig inmatning
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cout << "Invalid input. Please enter a valid integer." << std::endl;
             continue;
         }
 
-        // Kontrollera om inmatningen är inom de tillåtna gränserna
         if (userChoice < 0 || (size_t)userChoice >= menuOptions.size()) {
             std::cout << "Please enter a number between 0 and " << menuOptions.size() - 1 << "." << std::endl;
             continue;
         }
 
-        // Om allt är korrekt, returnera användarens val
         return userChoice;
     }
 }

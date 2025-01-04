@@ -9,7 +9,7 @@ int main(void)
     // Maximum limit of all storage used in the bank
     int bankSize = 1000000;
 
-    // uncomment this if you want to generate new clients
+    // UNCOMMENT LINE BELOW TO GENERATE CLIENTS
     // GenerateClients generateClients(bankSize);
 
     // LOADING FILES
@@ -28,6 +28,7 @@ int main(void)
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, bank.getClients()->getClients().size());
 
+    // ADDING TO POOL
     threadPool.enqueue([&bank, &gen, &dis]{
         while(bank.getQueue().isRunning())
         {
@@ -40,6 +41,7 @@ int main(void)
     // LOGIC FOR NAVIGATION THE PROGRAM
     MenuNavigation layer = MAIN_MENU;
 
+    // WHILE THE PROGRAM IS RUNNING
     while(true)
     {   
         switch(layer)
@@ -82,6 +84,7 @@ int main(void)
                 layer = MAIN_MENU;
                 continue;
         }
+
         break;
     }
 

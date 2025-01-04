@@ -82,9 +82,17 @@ Transaction TransactionLink::formatTransaction(std::string unformattedString)
 
 Transaction TransactionLink::getTransaction(std::string transactionID)
 {   
+    std::cout << "Looking for transaction [getTransaction]" << std::endl;
+    auto begin = std::chrono::high_resolution_clock::now();
+
     Transaction* transaction = transactionCache.searchCache(transactionID);
 
-    if(transaction) return *transaction;
+    if(transaction)
+    {
+        auto end = std::chrono::high_resolution_clock::now();
+        std::cout << "Transaction found in cache after: " << std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() << " nanoseconds" << std::endl;
+        return *transaction;
+    }
 
     std::string temp;
     bool isFound = false;
@@ -110,6 +118,10 @@ Transaction TransactionLink::getTransaction(std::string transactionID)
     {
         Transaction t = formatTransaction(temp);
         transactionCache.addToCache(t);
+
+        auto end = std::chrono::high_resolution_clock::now();
+        std::cout << "Transaction found in file after: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " milliseconds" << std::endl;
+
         return t;
     }
 
@@ -118,13 +130,17 @@ Transaction TransactionLink::getTransaction(std::string transactionID)
 
 std::vector<Transaction> TransactionLink::getTransactions(std::string accountNumber)
 {
+    std::cout << "Looking for transaction [getTransaction]" << std::endl;
+    auto begin = std::chrono::high_resolution_clock::now();
+
     std::vector<Transaction> transactionList;
 
     std::string tempString;
     std::ifstream file(TRANSACTIONS_PATH);
 
     while (std::getline(file, tempString)) {
-        // Dela upp raden i fält baserat på komma
+
+        // Split the strings using ',' as a delimiter
         std::stringstream ss(tempString);
         std::string field;
         std::vector<std::string> fields;
@@ -133,7 +149,6 @@ std::vector<Transaction> TransactionLink::getTransactions(std::string accountNum
             fields.push_back(field);
         }
 
-        // Kontrollera om första fältet exakt matchar accountNumber
         if (!fields.empty() && fields[1] == accountNumber) {
             Transaction t(formatTransaction(tempString));
             transactionList.push_back(t);
@@ -142,6 +157,9 @@ std::vector<Transaction> TransactionLink::getTransactions(std::string accountNum
     }
 
     file.close();
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << transactionList.size() << " transaction(s) found in file after: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " milliseconds" << std::endl;
 
     return transactionList;
 }

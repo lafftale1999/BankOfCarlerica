@@ -27,6 +27,7 @@ public:
     std::string getLastName();
     std::string getFullName();
     std::vector<std::string>& getAccounts();
+    void removeAccount(std::string accountNumber);
 };
 
 #endif

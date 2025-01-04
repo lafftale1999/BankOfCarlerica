@@ -92,3 +92,23 @@ std::vector<std::string>& Client::getAccounts()
 {
     return this->accounts;
 }
+
+void Client::removeAccount(std::string accountNumber)
+{
+    size_t index = -1;
+
+    for(size_t i = 0; i < accounts.size(); i++)
+    {
+        if(accounts[i] == accountNumber) index = 0;
+    }
+
+    if(index >= 0)
+    {
+        accounts.erase(accounts.begin() + index);
+    }
+
+    else
+    {
+        std::cout << "Account was not found [removeAccount]" << std::endl;
+    }
+}
