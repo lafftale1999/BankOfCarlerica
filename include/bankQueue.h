@@ -33,7 +33,6 @@ public:
             std::unique_lock<std::mutex> lock(this->mtx);
 
             cv.wait(lock, [this] {
-                std::cout << "Waiting in enqueue" << std::endl;
                 return this->size < N || stop;
             });
 
@@ -52,7 +51,6 @@ public:
         std::unique_lock<std::mutex> lock(this->mtx);
 
         cv.wait(lock, [this] {
-            std::cout << "Waiting in dequeue" << std::endl;
             return this->size > 0 || stop;
         });
 

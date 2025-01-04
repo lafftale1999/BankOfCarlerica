@@ -7,14 +7,15 @@
 #include <sstream>
 #include <ctime>
 
-int TransactionLink::transactionCount = 0;
 int TransactionLink::transactionLimit = 0;
+int TransactionLink::transactionCount = 0;
 
 TransactionLink::TransactionLink(){}
 
 TransactionLink::TransactionLink(int transactionLimit)
 {
     TransactionLink::transactionLimit = transactionLimit;
+    init();
 }
 
 TransactionLink::TransactionLink(std::string accountNumber)
@@ -43,13 +44,12 @@ void TransactionLink::addTransaction(std::string amount, std::string accountNumb
     std::ostringstream dateTimeStream;
     dateTimeStream << std::put_time(&localTime, "%Y-%m-%d %H:%M:%S");
 
-    int padding = 10;
-    std::string ID = std::string(padding - std::to_string(TransactionLink::transactionCount).length(), '0') + std::to_string(TransactionLink::transactionCount);
+    std::string ID = std::string(std::to_string(TransactionLink::transactionLimit).length() - std::to_string(TransactionLink::transactionCount).length(), '0') + std::to_string(TransactionLink::transactionCount);
      
     Transaction transaction(amount, dateTimeStream.str(), ID, accountNumber);
     writeTransactionToFile(transaction);
 
-    transactionCount++;
+    TransactionLink::transactionCount++;
 }
 
 Transaction TransactionLink::formatTransaction(std::string unformattedString)
@@ -120,11 +120,18 @@ std::vector<Transaction> TransactionLink::getTransactions(std::string accountNum
     std::string tempString;
     std::ifstream file(TRANSACTIONS_PATH);
 
-    while(std::getline(file, tempString))
-    {
-        if(tempString.find(accountNumber) != std::string::npos)
-        {
-            std::cout << "String found: " << tempString << std::endl;
+    while (std::getline(file, tempString)) {
+        // Dela upp raden i fält baserat på komma
+        std::stringstream ss(tempString);
+        std::string field;
+        std::vector<std::string> fields;
+
+        while (std::getline(ss, field, ',')) {
+            fields.push_back(field);
+        }
+
+        // Kontrollera om första fältet exakt matchar accountNumber
+        if (!fields.empty() && fields[1] == accountNumber) {
             Transaction t(formatTransaction(tempString));
             transactionList.push_back(t);
             transactionCache.addToCache(t);

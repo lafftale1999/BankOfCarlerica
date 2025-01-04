@@ -4,8 +4,9 @@ Bank::Bank(){}
 
 Bank::Bank(int size)
 {
-    accounts = AccountStorage(size * 3);
+    accounts = AccountStorage(size * 10);
     clients = ClientStorage(size);
+    transactionLink = TransactionLink(size * 100000);
 }
 
 AccountStorage* Bank::getAccounts()
@@ -20,7 +21,7 @@ ClientStorage* Bank::getClients()
 
 TransactionLink* Bank::getTransactionLink()
 {
-    return &this->ts;
+    return &this->transactionLink;
 }
 
 void Bank::setCurrentClient(std::string clientId)
@@ -33,7 +34,7 @@ Client* Bank::getCurrentClient()
     return currentClient;
 }
 
-/* void Bank::setNextClient()
+void Bank::setNextClient()
 {
     this->currentClient = this->clients.findClient(this->queue.dequeue());
 }
@@ -41,4 +42,4 @@ Client* Bank::getCurrentClient()
 BankQueue<std::string, 10>& Bank::getQueue()
 {
     return queue;
-} */
+}

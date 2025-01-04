@@ -8,7 +8,7 @@
 
 class GenerateClients
 {
-    Bank bank;
+    Bank *bank;
 
     std::vector<std::string> firstNames;
     std::vector<std::string> lastNames;

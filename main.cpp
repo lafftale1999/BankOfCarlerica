@@ -1,15 +1,27 @@
-#include "include/generateClients.h"
 #include "include/threadPool.h"
 #include "include/bankerUI.h"
+#include <random>
 
 int main(void)
 {
+    int bankSize = 10000;
 
-    GenerateClients gen(10);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, bankSize);
 
-    /* Bank bank(1000);
-
+    Bank bank(bankSize);
+    ThreadPool threadPool(std::thread::hardware_concurrency());
     MenuNavigation layer = MAIN_MENU;
+
+    threadPool.enqueue([&bank, &gen, &dis]{
+        while(bank.getQueue().isRunning())
+        {
+            int rnd = dis(gen);
+            std::string id = std::string(std::to_string(bank.getClients()->getClients().size()).length() - std::to_string(rnd).length() + 1, '0') + std::to_string(rnd);
+            bank.getQueue().enqueue(id);
+        }
+    });
 
     while(true)
     {   
@@ -19,8 +31,12 @@ int main(void)
                 layer = mainMenu();
                 continue;
 
-            case SERVE_CLIENT:
+            case SERVE_NEXT_CLIENT:
                 bank.setNextClient();
+                layer = serveClient(&bank);
+                continue;
+
+            case SERVE_CLIENT:
                 layer = serveClient(&bank);
                 continue;
 
@@ -41,12 +57,16 @@ int main(void)
                 continue;
 
             case EXIT:
+                bank.getQueue().stopQueue();
                 break;
-        }
 
+            default:
+                std::cout << "Something went wrong, going back to main menu" << std::endl;
+                layer = MAIN_MENU;
+                continue;
+        }
         break;
     }
- */
-    return 0;
 
+    return 0;
 }

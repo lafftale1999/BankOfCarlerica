@@ -7,6 +7,7 @@ typedef enum
 {
     MAIN_MENU,
     SERVE_CLIENT,
+    SERVE_NEXT_CLIENT,
     CHOOSE_CLIENT,
     NEW_CLIENT,
     CHECK_ACCOUNT,
