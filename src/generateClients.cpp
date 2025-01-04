@@ -5,6 +5,9 @@
 
 GenerateClients::GenerateClients(int amount)
 {
+    std::cout << "GENERATING CLIENTS" << std::endl;
+    auto begin = std::chrono::high_resolution_clock::now();
+
     cleanFiles();
 
     ClientStorage cs(amount * 10);
@@ -33,6 +36,9 @@ GenerateClients::GenerateClients(int amount)
     }
 
     delete bank;
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "Creating clients took: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " milliseconds" << std::endl;
 }
 
 void GenerateClients::loadNames(std::string path)

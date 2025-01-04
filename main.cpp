@@ -10,7 +10,7 @@ int main(void)
     int bankSize = 1000000;
 
     // UNCOMMENT LINE BELOW TO GENERATE CLIENTS
-    // GenerateClients generateClients(bankSize);
+    // GenerateClients generateClients(bankSize / 10);
 
     // LOADING FILES
     ClientStorage cs(bankSize * 10);
