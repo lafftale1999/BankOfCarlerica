@@ -1,6 +1,5 @@
 #include "include/generateClients.h"
 #include "include/threadPool.h"
-#include "include/bankerUI.h"
 
 int main(void)
 {
