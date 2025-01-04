@@ -6,7 +6,12 @@
 GenerateClients::GenerateClients(int amount)
 {
     cleanFiles();
-    bank =  new Bank(amount);
+
+    ClientStorage cs(amount * 10);
+    AccountStorage as(amount * 100);
+    TransactionLink tl (amount * 10000);
+
+    bank = new Bank(&as, &cs, &tl);
 
     loadNames(FIRSTNAME);
     loadNames(LASTNAME);

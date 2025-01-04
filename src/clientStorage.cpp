@@ -1,6 +1,9 @@
 #include "../include/clientStorage.h"
 #include <string>
 #include <fstream>
+#include <chrono>
+#include <cmath>
+#include <thread>
 
 ClientStorage::ClientStorage(){};
 
@@ -8,6 +11,21 @@ ClientStorage::ClientStorage(int maxLimit)
 {
     this->maxLimit = maxLimit;
     loadClientsFromFile();
+    if(clients.size() > 0)
+    {
+        padding = clients[0].getClientId().length();
+        std::cout << "CLIENT PADDING = " << padding << std::endl;
+        std::cout << "First client id = " << clients[0].getClientId() << std::endl;
+        std::cout << "CLIENTS LOADED" << std::endl;
+    }
+
+    else
+    {
+        padding = std::to_string(maxLimit).length();
+        std::cout << "CLIENT PADDING = " << padding << std::endl;
+    }
+
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 }
 
 ClientStorage::~ClientStorage()
@@ -19,7 +37,7 @@ void ClientStorage::addClient(std::string firstName, std::string lastName, std::
 {
     if(clients.size() < (size_t)maxLimit)
     {
-        std::string id = std::string(std::to_string(this->maxLimit).length() - std::to_string(this->clients.size()).length() + 1, '0') + std::to_string(clients.size());
+        std::string id = std::string(padding - std::to_string(clients.size()).length(), '0') + std::to_string(clients.size());
 
         clients.emplace_back(id, firstName, lastName, accounts);
     }
@@ -27,6 +45,7 @@ void ClientStorage::addClient(std::string firstName, std::string lastName, std::
     else
     {
         std::cout << "Clients list is full. Can't add more clients" << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(2));
     }
 }
 
@@ -46,6 +65,9 @@ Client* ClientStorage::findClient(std::string clientID)
         else if(clientID > clients[c].getClientId()) s = c + 1;
     }
 
+    std::cout << "Could not find client id " << clientID << std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+
     return nullptr;
 }
 
@@ -57,6 +79,9 @@ std::vector<Client>& ClientStorage::getClients()
 void ClientStorage::loadClientsFromFile()
 {
     std::ifstream file(CLIENT_PATH);
+
+    std::cout << "READING CLIENTS FROM FILE" << std::endl;
+    auto begin = std::chrono::high_resolution_clock::now();
 
     if(!file.is_open())
     {
@@ -94,11 +119,17 @@ void ClientStorage::loadClientsFromFile()
     }
 
     file.close();
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "READING CLIENTS TOOK: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " milliseconds" << std::endl;
 }
 
 void ClientStorage::saveClientsToFile()
 {
     std::ofstream file(CLIENT_PATH);
+
+    std::cout << "WRITING CLIENTS TO FILE" << std::endl;
+    auto begin = std::chrono::high_resolution_clock::now();
 
     if(!file.is_open())
     {
@@ -122,9 +153,17 @@ void ClientStorage::saveClientsToFile()
     }
 
     file.close();
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "SAVING CLIENTS TOOK: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " milliseconds" << std::endl;
 }
 
 int ClientStorage::getMaxLimit()
 {
     return this->maxLimit;
+}
+
+int ClientStorage::getPadding()
+{
+    return this->padding;
 }

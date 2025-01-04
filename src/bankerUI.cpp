@@ -75,7 +75,7 @@ MenuNavigation chooseClient(Bank *bank)
         }
     }
 
-    std::string temp = std::string(std::to_string(bank->getClients()->getMaxLimit()).length() - std::to_string(userInput).length() + 1, '0') + std::to_string(userInput);
+    std::string temp = std::string(bank->getClients()->getPadding() - std::to_string(userInput).length(), '0') + std::to_string(userInput);
 
     bank->setCurrentClient(temp);
 
@@ -320,23 +320,24 @@ MenuNavigation getUserInput(std::map<int, std::pair<std::string, MenuNavigation>
 
     while(true)
     {
-        try
-        {
-            std::cin >> userChoice;
-            
-            if((size_t)userChoice >= menuOptions.size() || userChoice < 0)
-            {
-                std::cout << "Please enter a number between " << 0 << " and " << menuOptions.size() - 1 << std::endl;
-                continue; 
-            }
+        // Läs in användarens val
+        std::cin >> userChoice;
 
-            return menuOptions[userChoice].second;
+        // Kontrollera om inmatningen är ogiltig
+        if (std::cin.fail()) {
+            std::cin.clear(); // Rensa fel-flaggor
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignorera felaktig inmatning
+            std::cout << "Invalid input. Please enter a valid integer." << std::endl;
+            continue;
         }
 
-        catch(const std::exception& e)
-        {
-            std::cerr << e.what() << '\n';
+        // Kontrollera om inmatningen är inom de tillåtna gränserna
+        if (userChoice < 0 || (size_t)userChoice >= menuOptions.size()) {
+            std::cout << "Please enter a number between 0 and " << menuOptions.size() - 1 << "." << std::endl;
+            continue;
         }
+
+        return menuOptions[userChoice].second;
     }
 }
 
@@ -346,22 +347,24 @@ int getUserInputInt(std::map<int, std::pair<std::string, MenuNavigation>> menuOp
 
     while(true)
     {
-        try
-        {
-            std::cin >> userChoice;
-            
-            if((size_t)userChoice >= menuOptions.size() || userChoice < 0)
-            {
-                std::cout << "Please enter a number between " << 0 << " and " << menuOptions.size() - 1 << std::endl;
-                continue; 
-            }
 
-            return userChoice;
+        std::cin >> userChoice;
+        
+        // Kontrollera om inmatningen är ogiltig
+        if (std::cin.fail()) {
+            std::cin.clear(); // Rensa fel-flaggor
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignorera felaktig inmatning
+            std::cout << "Invalid input. Please enter a valid integer." << std::endl;
+            continue;
         }
 
-        catch(const std::exception& e)
-        {
-            std::cerr << e.what() << '\n';
+        // Kontrollera om inmatningen är inom de tillåtna gränserna
+        if (userChoice < 0 || (size_t)userChoice >= menuOptions.size()) {
+            std::cout << "Please enter a number between 0 and " << menuOptions.size() - 1 << "." << std::endl;
+            continue;
         }
+
+        // Om allt är korrekt, returnera användarens val
+        return userChoice;
     }
 }

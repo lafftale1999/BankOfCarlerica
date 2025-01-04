@@ -1,24 +1,34 @@
 #include "include/threadPool.h"
 #include "include/bankerUI.h"
+#include "include/generateClients.h"
+
 #include <random>
 
 int main(void)
 {
-    int bankSize = 10000;
+    int bankSize = 1000000;
+
+    // uncomment this if you want to generate new clients!
+    // GenerateClients generateClients(bankSize);
+
+    // LOADING FILES
+    ClientStorage cs(bankSize * 10);
+    AccountStorage as(bankSize * 100);
+    TransactionLink tl (bankSize * 10000);
+
+    Bank bank(&as, &cs, &tl);
+    ThreadPool threadPool(std::thread::hardware_concurrency());
+    MenuNavigation layer = MAIN_MENU;
 
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(0, bankSize);
-
-    Bank bank(bankSize);
-    ThreadPool threadPool(std::thread::hardware_concurrency());
-    MenuNavigation layer = MAIN_MENU;
+    std::uniform_int_distribution<> dis(0, bank.getClients()->getClients().size());
 
     threadPool.enqueue([&bank, &gen, &dis]{
         while(bank.getQueue().isRunning())
         {
             int rnd = dis(gen);
-            std::string id = std::string(std::to_string(bank.getClients()->getClients().size()).length() - std::to_string(rnd).length() + 1, '0') + std::to_string(rnd);
+            std::string id = std::string(bank.getClients()->getPadding() - std::to_string(rnd).length(), '0') + std::to_string(rnd);
             bank.getQueue().enqueue(id);
         }
     });

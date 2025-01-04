@@ -9,6 +9,7 @@
 
 int TransactionLink::transactionLimit = 0;
 int TransactionLink::transactionCount = 0;
+int TransactionLink::padding = 0;
 
 TransactionLink::TransactionLink(){}
 
@@ -16,6 +17,8 @@ TransactionLink::TransactionLink(int transactionLimit)
 {
     TransactionLink::transactionLimit = transactionLimit;
     init();
+
+    if(!padding) padding = std::to_string(transactionLimit).length();
 }
 
 TransactionLink::TransactionLink(std::string accountNumber)
@@ -44,7 +47,7 @@ void TransactionLink::addTransaction(std::string amount, std::string accountNumb
     std::ostringstream dateTimeStream;
     dateTimeStream << std::put_time(&localTime, "%Y-%m-%d %H:%M:%S");
 
-    std::string ID = std::string(std::to_string(TransactionLink::transactionLimit).length() - std::to_string(TransactionLink::transactionCount).length(), '0') + std::to_string(TransactionLink::transactionCount);
+    std::string ID = std::string(padding - std::to_string(TransactionLink::transactionCount).length(), '0') + std::to_string(TransactionLink::transactionCount);
      
     Transaction transaction(amount, dateTimeStream.str(), ID, accountNumber);
     writeTransactionToFile(transaction);
@@ -182,4 +185,31 @@ void TransactionLink::writeTransactionToFile(Transaction& transaction)
     file << transaction.getID() + ',' + transaction.getAccountNumber() + ',' + transaction.getDate() + ',' + transaction.getAmount() + ',' << std::endl;
     
     file.close();
+}
+
+void TransactionLink::readFirstLine()
+{
+    std::ifstream file(TRANSACTIONS_PATH);
+    std::string temp;
+
+    std::string tempId;
+
+    if(!file.is_open())
+    {
+        std::cout << "Unable to open file [readFirstLine()]: " << TRANSACTIONS_PATH << std::endl;
+        return;
+    }
+
+    while(std::getline(file,temp))
+    {
+        for(size_t i = 0; i < temp.size(); i++)
+        {
+            if(temp[i] == ',') break;
+            tempId.push_back(temp[i]);
+        }
+
+        break;
+    }
+
+    TransactionLink::padding = tempId.length();
 }
