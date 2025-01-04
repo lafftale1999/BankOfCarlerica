@@ -10,7 +10,7 @@ class Bank
 {
     AccountStorage accounts;
     ClientStorage clients;
-    TransactionLink ts;
+    TransactionLink transactionLink;
     // BankQueue<std::string, 10> queue;
 
     Client* currentClient;

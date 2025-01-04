@@ -5,8 +5,17 @@
 int main(void)
 {
 
-    GenerateClients gen(10);
+    // GenerateClients gen(10000);
 
+    Bank bank(10000);
+
+    std::cout << bank.getClients()->getClients()[0].getFullName() << std::endl;
+    
+    for(auto a : bank.getClients()->getClients()[0].getAccounts())
+    {
+        std::cout << a << ": " << bank.getAccounts()->findAccount(a).getBalance() << std::endl;
+    }
+    
     /* Bank bank(1000);
 
     MenuNavigation layer = MAIN_MENU;

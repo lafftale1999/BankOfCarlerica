@@ -4,8 +4,9 @@ Bank::Bank(){}
 
 Bank::Bank(int size)
 {
-    accounts = AccountStorage(size * 3);
+    accounts = AccountStorage(size * 10);
     clients = ClientStorage(size);
+    transactionLink = TransactionLink(size * 100000);
 }
 
 AccountStorage* Bank::getAccounts()
@@ -20,7 +21,7 @@ ClientStorage* Bank::getClients()
 
 TransactionLink* Bank::getTransactionLink()
 {
-    return &this->ts;
+    return &this->transactionLink;
 }
 
 void Bank::setCurrentClient(std::string clientId)
