@@ -21,6 +21,10 @@ public:
 
     void loadClientsFromFile();
     void saveClientsToFile();
+<<<<<<< HEAD
+
+=======
+>>>>>>> d63df2e3900646a1437daec0bea7eec0d2f1d20c
     int getMaxLimit();
 };
 

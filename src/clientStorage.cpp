@@ -19,7 +19,7 @@ void ClientStorage::addClient(std::string firstName, std::string lastName, std::
 {
     if(clients.size() < (size_t)maxLimit)
     {
-        std::string id = std::string(std::to_string(this->maxLimit).length() - std::to_string(this->clients.size()).length(), '0') + std::to_string(clients.size());
+        std::string id = std::string(std::to_string(this->maxLimit).length() - std::to_string(this->clients.size()).length() + 1, '0') + std::to_string(clients.size());
 
         clients.emplace_back(id, firstName, lastName, accounts);
     }

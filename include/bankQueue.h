@@ -22,7 +22,10 @@ class BankQueue
     std::atomic<bool> stop;
 
 public:
-    BankQueue(): begin(0), end(0), size(0) {}
+    BankQueue(): begin(0), end(0), size(0)
+    {
+        stop.store(false);
+    }
 
     void enqueue(T element)
     {
@@ -30,6 +33,7 @@ public:
             std::unique_lock<std::mutex> lock(this->mtx);
 
             cv.wait(lock, [this] {
+                std::cout << "Waiting in enqueue" << std::endl;
                 return this->size < N || stop;
             });
 
@@ -48,6 +52,7 @@ public:
         std::unique_lock<std::mutex> lock(this->mtx);
 
         cv.wait(lock, [this] {
+            std::cout << "Waiting in dequeue" << std::endl;
             return this->size > 0 || stop;
         });
 
@@ -65,7 +70,10 @@ public:
 
     void stopQueue()
     {
-        stop = true;
+        {
+            std::unique_lock<std::mutex> lock(mtx);
+            stop.store(true);
+        }
         cv.notify_all();
     }
 
@@ -75,7 +83,8 @@ public:
             std::unique_lock<std::mutex> lock(this->mtx);
             cv.wait(lock, [this]
             {
-                return this->getSize() == N || !this->isRunning();
+                std::cout << "Waiting in printQueue" << std::endl;
+                return size == N || stop;
             });
 
             std::cout << std::endl;

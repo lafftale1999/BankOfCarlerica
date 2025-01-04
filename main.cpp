@@ -5,7 +5,7 @@
 int main(void)
 {
 
-    GenerateClients gen(1000);
+    GenerateClients gen(10);
 
     /* Bank bank(1000);
 
