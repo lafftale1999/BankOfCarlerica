@@ -3,13 +3,11 @@
 #include <stdlib.h>
 #include <string>
 
-
-
 MenuNavigation mainMenu()
 {   
     std::map<int, std::pair<std::string, MenuNavigation>> menuOptions = 
     {
-        {0,{"Serve next client", SERVE_CLIENT}},
+        {0,{"Serve next client", SERVE_NEXT_CLIENT}},
         {1,{"Help specific client", CHOOSE_CLIENT}},
         {2,{"Add new client", NEW_CLIENT}},
         {3,{"Exit", EXIT}}
@@ -77,7 +75,7 @@ MenuNavigation chooseClient(Bank *bank)
         }
     }
 
-    std::string temp = std::string(std::to_string(userInput).length() - bank->getClients()->getMaxLimit(), '0') + std::to_string(userInput);
+    std::string temp = std::string(std::to_string(bank->getClients()->getMaxLimit()).length() - std::to_string(userInput).length() + 1, '0') + std::to_string(userInput);
 
     bank->setCurrentClient(temp);
 
@@ -161,7 +159,7 @@ MenuNavigation checkAccount(Bank *bank)
             break;
         }
 
-        menuOptions[i] = {bank->getCurrentClient()->getAccounts().at(i) + std::to_string(bank->getAccounts()->findAccount(bank->getCurrentClient()->getAccounts().at(i)).getBalance()) + " kr", ACCOUNT_CHOOSEN};
+        menuOptions[i] = {bank->getCurrentClient()->getAccounts().at(i) + ' ' + std::to_string(bank->getAccounts()->findAccount(bank->getCurrentClient()->getAccounts().at(i)).getBalance()) + " kr", ACCOUNT_CHOOSEN};
     }
 
     printMenu(
@@ -172,7 +170,7 @@ MenuNavigation checkAccount(Bank *bank)
 
     int userInput = getUserInputInt(menuOptions);
 
-    if(userInput < bank->getCurrentClient()->getAccounts().size())
+    if((size_t)userInput < bank->getCurrentClient()->getAccounts().size())
     {
         showAccount(userInput, bank);
     }
@@ -190,7 +188,7 @@ void showAccount(int index, Bank *bank)
     };
 
     std::string accountNumber = bank->getCurrentClient()->getAccounts()[index];
-    Account currentAccount = bank->getAccounts()->findAccount(accountNumber);
+    Account &currentAccount = bank->getAccounts()->findAccount(accountNumber);
 
     while(true)
     {
@@ -214,6 +212,9 @@ void showAccount(int index, Bank *bank)
 
             case CHECK_ACCOUNT:
                 return;
+
+            default:
+                std::cout << "Something went wrong, please try again!" << std::endl;
         }
     }    
 }
@@ -271,6 +272,9 @@ void updateBalance(Account* account)
 // WITH MENU OPTIONS
 void printMenu(std::string headline, std::string message, std::map<int, std::pair<std::string, MenuNavigation>> menuOptions)
 {
+
+    system("cls");
+
     if(!headline.empty())
     {
         std::cout << headline << std::endl;
@@ -287,7 +291,7 @@ void printMenu(std::string headline, std::string message, std::map<int, std::pai
     {
         for(auto i = menuOptions.begin(); i != menuOptions.end(); i++)
         {
-            std::cout << i->first << std::endl;
+            std::cout << i->first << ". " << i->second.first << std::endl;
         }
     }
 }
@@ -295,6 +299,8 @@ void printMenu(std::string headline, std::string message, std::map<int, std::pai
 // WITHOUT MENU OPTIONS
 void printMenu(std::string headline, std::string message)
 {
+    system("cls");
+    
     if(!headline.empty())
     {
         std::cout << headline << std::endl;
@@ -318,7 +324,7 @@ MenuNavigation getUserInput(std::map<int, std::pair<std::string, MenuNavigation>
         {
             std::cin >> userChoice;
             
-            if(userChoice >= menuOptions.size() || userChoice < 0)
+            if((size_t)userChoice >= menuOptions.size() || userChoice < 0)
             {
                 std::cout << "Please enter a number between " << 0 << " and " << menuOptions.size() - 1 << std::endl;
                 continue; 
@@ -344,7 +350,7 @@ int getUserInputInt(std::map<int, std::pair<std::string, MenuNavigation>> menuOp
         {
             std::cin >> userChoice;
             
-            if(userChoice >= menuOptions.size() || userChoice < 0)
+            if((size_t)userChoice >= menuOptions.size() || userChoice < 0)
             {
                 std::cout << "Please enter a number between " << 0 << " and " << menuOptions.size() - 1 << std::endl;
                 continue; 

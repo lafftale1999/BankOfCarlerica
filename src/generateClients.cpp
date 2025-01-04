@@ -5,8 +5,8 @@
 
 GenerateClients::GenerateClients(int amount)
 {
-    bank = Bank(amount);
-    // cleanFiles();
+    cleanFiles();
+    bank =  new Bank(amount);
 
     loadNames(FIRSTNAME);
     loadNames(LASTNAME);
@@ -21,11 +21,13 @@ GenerateClients::GenerateClients(int amount)
 
         for(int i = 0; i < n_of_accounts; i++)
         {
-            listOfAccounts.push_back(this->bank.getAccounts()->createNewAccount());
+            listOfAccounts.push_back(this->bank->getAccounts()->createNewAccount());
         }
-
-        bank.getClients()->addClient(firstNames[fname], lastNames[lname], listOfAccounts);
+        
+        bank->getClients()->addClient(firstNames[fname], lastNames[lname], listOfAccounts);
     }
+
+    delete bank;
 }
 
 void GenerateClients::loadNames(std::string path)
@@ -52,10 +54,14 @@ void GenerateClients::loadNames(std::string path)
 void GenerateClients::cleanFiles()
 {
     std::ofstream cfile(CLIENT_PATH);
-    if(cfile.is_open()) cfile << "";
+    if(cfile.is_open()) cfile.clear();
     cfile.close();
 
     std::ofstream afile(ACCOUNTS_PATH);
-    if(afile.is_open()) afile << "";
+    if(afile.is_open()) afile.clear();
     afile.close();
+
+    std::ofstream tfile(TRANSACTIONS_PATH);
+    if(tfile.is_open()) cfile.clear();
+    tfile.close();
 }

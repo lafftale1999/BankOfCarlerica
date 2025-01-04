@@ -120,11 +120,18 @@ std::vector<Transaction> TransactionLink::getTransactions(std::string accountNum
     std::string tempString;
     std::ifstream file(TRANSACTIONS_PATH);
 
-    while(std::getline(file, tempString))
-    {
-        if(tempString.find(accountNumber) != std::string::npos)
-        {
-            std::cout << "String found: " << tempString << std::endl;
+    while (std::getline(file, tempString)) {
+        // Dela upp raden i fält baserat på komma
+        std::stringstream ss(tempString);
+        std::string field;
+        std::vector<std::string> fields;
+
+        while (std::getline(ss, field, ',')) {
+            fields.push_back(field);
+        }
+
+        // Kontrollera om första fältet exakt matchar accountNumber
+        if (!fields.empty() && fields[1] == accountNumber) {
             Transaction t(formatTransaction(tempString));
             transactionList.push_back(t);
             transactionCache.addToCache(t);

@@ -1,5 +1,5 @@
 PROG = main.exe 
-SRC = main.cpp src/transaction.cpp src/transactionLink.cpp src/account.cpp src/accountStorage.cpp src/client.cpp src/clientStorage.cpp src/generateClients.cpp src/bank.cpp
+SRC = main.cpp src/account.cpp src/accountStorage.cpp src/bank.cpp src/bankerUI.cpp src/client.cpp src/clientStorage.cpp src/generateClients.cpp src/transaction.cpp src/transactionLink.cpp
 CFLAGS = -g -Wall -Werror
 LIBS =
 CC = g++
