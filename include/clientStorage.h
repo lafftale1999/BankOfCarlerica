@@ -21,6 +21,8 @@ public:
 
     void loadClientsFromFile();
     void saveClientsToFile();
+
+    int getMaxLimit();
 };
 
 #endif

@@ -15,9 +15,9 @@ int main(void)
             int rnd = rand() % 100;
             queue.enqueue(rnd);
 
-            std::cout << "Added " << rnd << " from queue" << std::endl;
+            std::cout << "Added " << rnd << " to queue" << std::endl;
 
-            std::this_thread::sleep_for(std::chrono::seconds(1));            
+            std::this_thread::sleep_for(std::chrono::milliseconds(250));            
         }
     });
 
@@ -30,8 +30,12 @@ int main(void)
             {
                 std::cout << "Removed " << *item << " from queue" << std::endl;
             }
+            else
+            {
+                std::cout << "Failed to add to queue" << std::endl;
+            }
 
-            std::this_thread::sleep_for(std::chrono::seconds(2));
+            std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     });
 
@@ -39,6 +43,7 @@ int main(void)
     pool.enqueue([&queue] {
         std::this_thread::sleep_for(std::chrono::seconds(20));
         queue.stopQueue();
+        std::cout << "Queue was stopped" << std::endl;
     });
 
     return 0;
