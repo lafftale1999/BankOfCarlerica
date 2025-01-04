@@ -25,6 +25,7 @@ public:
     std::string getClientId();
     std::string getFirstName();
     std::string getLastName();
+    std::string getFullName();
     std::vector<std::string>& getAccounts();
 };
 
