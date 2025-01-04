@@ -43,7 +43,7 @@ public:
         cv.notify_one();
     }
 
-    std::optional<T> dequeue()
+    T dequeue()
     {
         std::unique_lock<std::mutex> lock(this->mtx);
 
@@ -51,7 +51,7 @@ public:
             return this->size > 0 || stop;
         });
 
-        if(stop) return std::nullopt;
+        if(stop) throw "queue stopped";
 
         T item = queue[begin];
         begin = (begin + 1) % N;

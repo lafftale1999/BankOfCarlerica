@@ -83,6 +83,11 @@ std::string Client::getLastName()
     return this->lastName;
 }
 
+std::string Client::getFullName()
+{
+    return this->firstName + " " + this->lastName;
+}
+
 std::vector<std::string>& Client::getAccounts()
 {
     return this->accounts;

@@ -79,7 +79,11 @@
         "text_encoding": "cpp",
         "variant": "cpp",
         "condition_variable": "cpp",
-        "semaphore": "cpp"
+        "semaphore": "cpp",
+        "list": "cpp",
+        "queue": "cpp",
+        "ranges": "cpp",
+        "xhash": "cpp"
     },
     "makefile.launchConfigurations": [
         {
