@@ -11,7 +11,7 @@ class Bank
     AccountStorage accounts;
     ClientStorage clients;
     TransactionLink ts;
-    BankQueue<std::string, 10> queue;
+    // BankQueue<std::string, 10> queue;
 
     Client* currentClient;
 

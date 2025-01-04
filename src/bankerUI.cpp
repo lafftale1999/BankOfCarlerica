@@ -1,51 +1,19 @@
 #include "../include/bankerUI.h"
-#include "../include/bank.h"
 
 #include <stdlib.h>
 #include <string>
 
-int navigation(Bank* bank)
-{
-    MenuNavigation layer = MAIN_MENU;
 
-    while(true)
-    {   
-        switch(layer)
-        {
-            case MAIN_MENU:
-                layer = mainMenu();
-                continue;
-
-            case NEXT_CLIENT:
-                bank->setNextClient();
-                layer = nextClient(bank);
-                continue;
-
-            case CHOOSE_CLIENT:
-                layer = chooseClient(bank);
-                continue;
-
-            case NEW_CLIENT:
-                layer = newClient(bank);
-                continue;
-
-            case CHECK_ACCOUNT:
-                continue;
-        }
-    }
-}
 
 MenuNavigation mainMenu()
 {   
     std::map<int, std::pair<std::string, MenuNavigation>> menuOptions = 
     {
-        {0,{"Serve next client", NEXT_CLIENT}},
+        {0,{"Serve next client", SERVE_CLIENT}},
         {1,{"Help specific client", CHOOSE_CLIENT}},
         {2,{"Add new client", NEW_CLIENT}},
         {3,{"Exit", EXIT}}
     };
-
-    system("cls");
 
     printMenu(
         "MAIN MENU",
@@ -56,7 +24,7 @@ MenuNavigation mainMenu()
     return getUserInput(menuOptions);
 }
 
-MenuNavigation nextClient(Bank* bank)
+MenuNavigation serveClient(Bank* bank)
 {
     if(bank->getCurrentClient())
     {
@@ -113,7 +81,7 @@ MenuNavigation chooseClient(Bank *bank)
 
     bank->setCurrentClient(temp);
 
-    return NEXT_CLIENT;
+    return SERVE_CLIENT;
 }
 
 MenuNavigation newClient(Bank *bank)
@@ -154,14 +122,151 @@ MenuNavigation newClient(Bank *bank)
         break;
     }
 
+    if(lastName == "x" || lastName == "X") return MAIN_MENU;
+
     bank->getClients()->addClient(firstName, lastName, accounts);
 
     bank->setCurrentClient(bank->getClients()->getClients()[bank->getClients()->getClients().size() - 1].getClientId());
 
-    return NEXT_CLIENT;
+    return SERVE_CLIENT;
 }
 
+MenuNavigation createNewAccount(Bank *bank)
+{
+    printMenu(
+        "OPEN NEW ACCOUNT",
+        "Opening new account for " + bank->getCurrentClient()->getFullName()
+    );
 
+    bank->getCurrentClient()->addAccount(bank->getAccounts()->createNewAccount());
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    std::cout << "Account is opened!" << std::endl;
+
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+
+    return SERVE_CLIENT;
+}
+
+MenuNavigation checkAccount(Bank *bank)
+{
+    std::map<int, std::pair<std::string, MenuNavigation>> menuOptions;
+
+    for(size_t i = 0; i <= bank->getCurrentClient()->getAccounts().size(); i++)
+    {
+        if(i == bank->getCurrentClient()->getAccounts().size())
+        {
+            menuOptions[i] = {"Back", SERVE_CLIENT};
+            break;
+        }
+
+        menuOptions[i] = {bank->getCurrentClient()->getAccounts().at(i) + std::to_string(bank->getAccounts()->findAccount(bank->getCurrentClient()->getAccounts().at(i)).getBalance()) + " kr", ACCOUNT_CHOOSEN};
+    }
+
+    printMenu(
+        "CHECK ACCOUNTS",
+        "You are now serving " + bank->getCurrentClient()->getFullName() + " with " + std::to_string(bank->getCurrentClient()->getAccounts().size()) + " accounts.",
+        menuOptions
+    );
+
+    int userInput = getUserInputInt(menuOptions);
+
+    if(userInput < bank->getCurrentClient()->getAccounts().size())
+    {
+        showAccount(userInput, bank);
+    }
+    
+    return SERVE_CLIENT;
+}
+
+void showAccount(int index, Bank *bank)
+{
+    std::map<int, std::pair<std::string, MenuNavigation>> menuOptions =
+    {
+        {0,{"Show transactions", SHOW_TRANSACTIONS}},
+        {1,{"Update balance", UPDATE_BALANCE}},
+        {2,{"Back", CHECK_ACCOUNT}}
+    };
+
+    std::string accountNumber = bank->getCurrentClient()->getAccounts()[index];
+    Account currentAccount = bank->getAccounts()->findAccount(accountNumber);
+
+    while(true)
+    {
+        printMenu(
+            "CHECK YOUR ACCOUNT",
+            "Current account is " + currentAccount.getAccountNumber() + " with a balance of " + std::to_string(currentAccount.getBalance()) + "kr",
+            menuOptions
+        );
+
+        MenuNavigation nav = getUserInput(menuOptions);
+
+        switch(nav)
+        {
+            case SHOW_TRANSACTIONS:
+                showTransactions(&currentAccount);
+                continue;;
+
+            case UPDATE_BALANCE:
+                updateBalance(&currentAccount);
+                continue;
+
+            case CHECK_ACCOUNT:
+                return;
+        }
+    }    
+}
+
+void showTransactions(Account* account)
+{
+    printMenu(
+        "SHOW TRANSACTIONS",
+        "Account: " + account->getAccountNumber() + " with a balance of " + std::to_string(account->getBalance()) + "kr. Press Enter to go back!"
+    );
+
+    for(auto t : account->getTransactionHistory())
+    {
+        std::cout << t.getID() + " | " + t.getAccountNumber() + " | " + t.getAmount() + "kr | " + t.getDate() << std::endl;
+    }
+
+    std::string waitForInput;
+    std::cin >> waitForInput;
+}
+
+void updateBalance(Account* account)
+{
+    printMenu(
+        "UPDATE BALANCE",
+        "Account: " + account->getAccountNumber() + " with a balance of " + std::to_string(account->getBalance()) + "kr.\n Enter the amount to update or 0 and enter to go back"
+    );
+
+    float userInput = 0;
+
+    while(true)
+    {
+        try
+        {
+            std::cin >> userInput;
+            break;
+        }
+
+        catch(const std::exception &e)
+        {
+            std::cout << e.what() << std::endl;
+        }
+    }
+
+    if(userInput != 0)
+    {
+        SuccessMessage balanceUpdated = account->updateBalance(userInput);
+
+        if(balanceUpdated == SUCCESS) std::cout << "Account balance has been updated" << std::endl;
+        else if(balanceUpdated == FAILED) std::cout << "Failed to update account balance" << std::endl;
+
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+    }
+}
 
 // WITH MENU OPTIONS
 void printMenu(std::string headline, std::string message, std::map<int, std::pair<std::string, MenuNavigation>> menuOptions)
@@ -220,6 +325,32 @@ MenuNavigation getUserInput(std::map<int, std::pair<std::string, MenuNavigation>
             }
 
             return menuOptions[userChoice].second;
+        }
+
+        catch(const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+        }
+    }
+}
+
+int getUserInputInt(std::map<int, std::pair<std::string, MenuNavigation>> menuOptions)
+{
+    int userChoice;
+
+    while(true)
+    {
+        try
+        {
+            std::cin >> userChoice;
+            
+            if(userChoice >= menuOptions.size() || userChoice < 0)
+            {
+                std::cout << "Please enter a number between " << 0 << " and " << menuOptions.size() - 1 << std::endl;
+                continue; 
+            }
+
+            return userChoice;
         }
 
         catch(const std::exception& e)

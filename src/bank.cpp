@@ -33,7 +33,7 @@ Client* Bank::getCurrentClient()
     return currentClient;
 }
 
-void Bank::setNextClient()
+/* void Bank::setNextClient()
 {
     this->currentClient = this->clients.findClient(this->queue.dequeue());
 }
@@ -41,4 +41,4 @@ void Bank::setNextClient()
 BankQueue<std::string, 10>& Bank::getQueue()
 {
     return queue;
-}
+} */
