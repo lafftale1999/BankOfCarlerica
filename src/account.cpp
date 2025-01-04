@@ -6,6 +6,8 @@ Account::Account(){}
 Account::Account(std::string accountNumber)
 {
     setAccountNumber(accountNumber);
+    
+    // CREATING SOME RANDOM SUMS TO SIMULATE BALANCE ON ACCOUNTS
     balance = 0;
     int rnd = (rand() % 100) * 1000;
     updateBalance(rnd);

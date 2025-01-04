@@ -6,9 +6,10 @@
 
 int main(void)
 {
+    // Maximum limit of all storage used in the bank
     int bankSize = 1000000;
 
-    // uncomment this if you want to generate new clients!
+    // uncomment this if you want to generate new clients
     // GenerateClients generateClients(bankSize);
 
     // LOADING FILES
@@ -16,10 +17,13 @@ int main(void)
     AccountStorage as(bankSize * 100);
     TransactionLink tl (bankSize * 10000);
 
+    // CREATING THE BANK
     Bank bank(&as, &cs, &tl);
-    ThreadPool threadPool(std::thread::hardware_concurrency());
-    MenuNavigation layer = MAIN_MENU;
 
+    // CREATING THE THREAD POOL BASED ON AVAILABLE THREADS
+    ThreadPool threadPool(std::thread::hardware_concurrency());
+
+    // LOGIC FOR FILLING THE QUEUE
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, bank.getClients()->getClients().size());
@@ -32,6 +36,9 @@ int main(void)
             bank.getQueue().enqueue(id);
         }
     });
+
+    // LOGIC FOR NAVIGATION THE PROGRAM
+    MenuNavigation layer = MAIN_MENU;
 
     while(true)
     {   
