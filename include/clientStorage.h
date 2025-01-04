@@ -9,6 +9,7 @@ class ClientStorage
 {
     std::vector<Client> clients;
     int maxLimit;
+    int padding;
 
 public:
     ClientStorage();
@@ -22,6 +23,7 @@ public:
     void loadClientsFromFile();
     void saveClientsToFile();
     int getMaxLimit();
+    int getPadding();
 };
 
 #endif

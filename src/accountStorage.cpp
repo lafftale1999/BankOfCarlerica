@@ -9,6 +9,19 @@ AccountStorage::AccountStorage(int accountLimit)
 {
     this->accountLimit = accountLimit;
     loadAccountsFromFile();
+
+    if(accounts.size() > 0)
+    {
+        padding = accounts["00000000"].getAccountNumber().length();
+        std::cout << accounts["00000000"].getAccountNumber() << std::endl;
+    }
+    else
+    {
+        padding = std::to_string(accountLimit).length();
+        std::cout << padding << std::endl;
+    }
+
+    std::cout << "ACCOUNTS LOADED" << std::endl;
 }
 
 AccountStorage::~AccountStorage()
@@ -21,7 +34,7 @@ std::string AccountStorage::createNewAccount()
     if(accounts.size() >= (size_t)accountLimit) return "";
 
     std::string accountNumber = std::to_string(this->accounts.size());
-    accountNumber = std::string(std::to_string(accountLimit).length() - std::to_string(this->accounts.size()).length(), '0') + std::to_string(this->accounts.size());
+    accountNumber = std::string(padding - std::to_string(this->accounts.size()).length(), '0') + std::to_string(this->accounts.size());
 
     accounts[accountNumber] = Account(accountNumber);
 
@@ -59,6 +72,9 @@ void AccountStorage::loadAccountsFromFile()
     int counter = 0;
     std::string temp;
     std::vector<std::string>accountInformation(2);
+    // [0] == ID
+    // [1] == BALANCE
+
     int index = 0;
 
     while(std::getline(file, temp))
@@ -97,7 +113,7 @@ void AccountStorage::loadAccountsFromFile()
 
 void AccountStorage::writeAccountsToFile()
 {
-    std::cout << "WRITING TO FILE" << std::endl;
+    std::cout << "WRITING ACCOUNTS TO FILE" << std::endl;
     auto start = std::chrono::high_resolution_clock::now();
 
     std::ofstream file(ACCOUNTS_PATH);

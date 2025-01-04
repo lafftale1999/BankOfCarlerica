@@ -12,6 +12,7 @@ class TransactionLink
     std::vector<Transaction> currentTransactions;
     static int transactionCount;
     static int transactionLimit;
+    static int padding;
     CacheLRU<Transaction,10> transactionCache;
 
 public:
@@ -28,6 +29,7 @@ public:
     std::vector<Transaction> getCurrentTransactions();
     void readTransactionsFromFile();
     void writeTransactionToFile(Transaction& transaction);
+    void readFirstLine();
 };
 
 #endif

@@ -11,6 +11,7 @@ class AccountStorage
 {
     std::map<std::string,Account> accounts;
     int accountLimit;
+    int padding;
 
 public:
     AccountStorage();

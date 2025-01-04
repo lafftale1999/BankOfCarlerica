@@ -8,16 +8,16 @@
 
 class Bank
 {
-    AccountStorage accounts;
-    ClientStorage clients;
-    TransactionLink transactionLink;
+    AccountStorage* accounts;
+    ClientStorage* clients;
+    TransactionLink* transactionLink;
     BankQueue<std::string, 10> queue;
 
     Client* currentClient;
 
 public:
     Bank();
-    Bank(int size);
+    Bank(AccountStorage* as, ClientStorage* cs, TransactionLink* ts);
 
     AccountStorage* getAccounts();
     ClientStorage* getClients();
