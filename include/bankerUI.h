@@ -10,6 +10,8 @@ typedef enum
     SERVE_NEXT_CLIENT,
     CHOOSE_CLIENT,
     NEW_CLIENT,
+    FIND_TRANSACTION,
+    FIND_ACCOUNT,
     CHECK_ACCOUNT,
     CREATE_ACCOUNT,
     CLOSE_ACCOUNT,
@@ -24,8 +26,12 @@ MenuNavigation serveClient(Bank* bank);
 MenuNavigation chooseClient(Bank *bank);
 MenuNavigation newClient(Bank *bank);
 MenuNavigation createNewAccount(Bank *bank);
-MenuNavigation checkAccount(Bank *bank);
-void showAccount(int index, Bank *bank);
+MenuNavigation checkAccounts(Bank *bank);
+MenuNavigation findSpecificAccount(Bank *bank);
+MenuNavigation showAccount(int index, Bank *bank);
+MenuNavigation findTransaction(Bank* bank);
+
+
 void showTransactions(Account* account);
 void updateBalance(Account* account);
 

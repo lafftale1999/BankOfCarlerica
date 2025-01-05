@@ -52,7 +52,12 @@ std::string Transaction::getDate()
     return this->date;
 }
 
-std::string Transaction::getID()
+std::string Transaction::getID() const 
 {
     return this->ID;
+}
+
+std::string Transaction::getAccountNumber() const
+{
+    return this->accountNumber;
 }

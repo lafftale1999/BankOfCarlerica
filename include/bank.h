@@ -14,6 +14,8 @@ class Bank
     BankQueue<std::string, 10> queue;
 
     Client* currentClient;
+    Transaction currentTransaction;
+    Account* currentAccount;
 
 public:
     Bank();
@@ -23,9 +25,14 @@ public:
     ClientStorage* getClients();
     TransactionLink* getTransactionLink();
     
-    void setCurrentClient(std::string client);
-    void setNextClient();
+    void setCurrentClient(std::string clientID);
+    void setCurrentTransaction(Transaction transaction);
+    void setCurrentAccount(std::string accountNumber);
     Client* getCurrentClient();
+    Transaction& getCurrentTransaction();
+    Account* getCurrentAccount();
+
+    void setNextClient();
     BankQueue<std::string, 10>& getQueue();
 };
 

@@ -20,12 +20,14 @@ public:
     void addAccount(std::string accountNumber, std::string balance);
     std::string createNewAccount();
     void removeAccount(std::string accountNumber);
-    Account& findAccount(std::string accountNumber);
+    Account* findAccount(std::string accountNumber);
 
     void loadAccountsFromFile();
     void writeAccountsToFile();
 
     std::map<std::string,Account> getMap();
+    int getAccountLimit();
+    int getPadding();
 };
 
 #endif

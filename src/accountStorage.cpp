@@ -47,9 +47,16 @@ void AccountStorage::removeAccount(std::string accountNumber)
     this->accounts[accountNumber].~Account();
 }
 
-Account& AccountStorage::findAccount(std::string accountNumber)
+Account* AccountStorage::findAccount(std::string accountNumber)
 {
-    return this->accounts[accountNumber];
+    auto it = accounts.find(accountNumber);
+
+    if(it != accounts.end())
+    {
+        return &it->second;
+    }
+
+    return nullptr;
 }
 
 void AccountStorage::loadAccountsFromFile()
@@ -135,4 +142,14 @@ void AccountStorage::writeAccountsToFile()
 std::map<std::string,Account> AccountStorage::getMap()
 {
     return this->accounts;
+}
+
+int AccountStorage::getAccountLimit()
+{
+    return this->accountLimit;
+}
+
+int AccountStorage::getPadding()
+{
+    return this->padding;
 }

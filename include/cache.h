@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <optional>
+#include <vector>
 
 // To use this Cache, the objects handled in cache must comply with cacheRequirements.h
 
@@ -12,25 +13,30 @@ class CacheLRU
     T cache[N];
     size_t size = 0;
     size_t max_size = N;
+    size_t temporaryArraySize = 0;
 
 public:
     CacheLRU(){}
     
-    T* searchCache(const std::string string)
-    {
-        for(auto &obj : cache)
+    std::vector<T> searchCache(const std::string string)
+    {   
+        std::vector<T> array;
+
+        for(size_t i = 0; i < size; i++)
         {
-            if(string == obj.getID())
+            if(string == cache[i].getID() || string == cache[i].getAccountNumber())
             {
-                addToCache(obj);
-                return &obj;
+                addToCache(cache[i]);
+                array.push_back(cache[0]);
             }
         }
-        return nullptr;
+
+        temporaryArraySize = array.size();
+        return array;
     }
 
-    void addToCache(T& item)
-    {   
+    void addToCache(T item)
+    {
         int foundAt = -1;
 
         for(size_t i = 0; i < size; i++)
@@ -49,7 +55,6 @@ public:
                 cache[i] = cache[i-1];
             }
         }
-
         else
         {
             if(size < N) size++;
@@ -79,6 +84,11 @@ public:
     T* getCache()
     {
         return cache;
+    }
+
+    size_t getTemporaryArraySize()
+    {
+        return this->temporaryArraySize;
     }
 };
 

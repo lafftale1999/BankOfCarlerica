@@ -5,7 +5,8 @@
 
 class CacheRequirements
 {
-    virtual std::string getID() = 0;
+    virtual std::string getID() const = 0;
+    virtual std::string getAccountNumber() const = 0;
 };
 
 #endif

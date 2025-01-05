@@ -13,7 +13,7 @@ class TransactionLink
     static int transactionCount;
     static int transactionLimit;
     static int padding;
-    CacheLRU<Transaction,10> transactionCache;
+    static CacheLRU<Transaction,10> transactionCache;
 
 public:
     TransactionLink();
@@ -30,6 +30,8 @@ public:
     void readTransactionsFromFile();
     void writeTransactionToFile(Transaction& transaction);
     void readFirstLine();
+    int getPadding();
+    int getTransactionLimit();
 };
 
 #endif

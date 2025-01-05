@@ -10,6 +10,7 @@
 int TransactionLink::transactionLimit = 0;
 int TransactionLink::transactionCount = 0;
 int TransactionLink::padding = 0;
+CacheLRU<Transaction, 10> TransactionLink::transactionCache;
 
 TransactionLink::TransactionLink(){}
 
@@ -82,16 +83,23 @@ Transaction TransactionLink::formatTransaction(std::string unformattedString)
 
 Transaction TransactionLink::getTransaction(std::string transactionID)
 {   
-    std::cout << "Looking for transaction [getTransaction]" << std::endl;
     auto begin = std::chrono::high_resolution_clock::now();
 
-    Transaction* transaction = transactionCache.searchCache(transactionID);
+    std::vector<Transaction> transactions;
 
-    if(transaction)
+    if(TransactionLink::transactionCache.getSize() > 0)
     {
-        auto end = std::chrono::high_resolution_clock::now();
-        std::cout << "Transaction found in cache after: " << std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() << " nanoseconds" << std::endl;
-        return *transaction;
+        for(auto t: transactionCache.searchCache(transactionID))
+        {
+            transactions.push_back(t);
+        }
+
+        if(!transactions.empty())
+        {
+            auto end = std::chrono::high_resolution_clock::now();
+            std::cout << "Transaction found in cache after " << std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() << " nanoseconds" << std::endl;
+            return transactions[0];
+        }
     }
 
     std::string temp;
@@ -117,7 +125,7 @@ Transaction TransactionLink::getTransaction(std::string transactionID)
     if(isFound)
     {
         Transaction t = formatTransaction(temp);
-        transactionCache.addToCache(t);
+        TransactionLink::transactionCache.addToCache(t);
 
         auto end = std::chrono::high_resolution_clock::now();
         std::cout << "Transaction found in file after: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " milliseconds" << std::endl;
@@ -130,15 +138,20 @@ Transaction TransactionLink::getTransaction(std::string transactionID)
 
 std::vector<Transaction> TransactionLink::getTransactions(std::string accountNumber)
 {
-    std::cout << "Looking for transaction [getTransaction]" << std::endl;
     auto begin = std::chrono::high_resolution_clock::now();
 
     std::vector<Transaction> transactionList;
+
+    for(auto t : transactionCache.searchCache(accountNumber))
+    {
+        transactionList.push_back(t);
+    }
 
     std::string tempString;
     std::ifstream file(TRANSACTIONS_PATH);
 
     while (std::getline(file, tempString)) {
+        bool isInCache = false;
 
         // Split the strings using ',' as a delimiter
         std::stringstream ss(tempString);
@@ -146,8 +159,19 @@ std::vector<Transaction> TransactionLink::getTransactions(std::string accountNum
         std::vector<std::string> fields;
 
         while (std::getline(ss, field, ',')) {
+            for(auto t: transactionList)
+            {
+                if(field == t.getID())
+                {
+                    isInCache = true;
+                    break;
+                }
+            }
+
             fields.push_back(field);
         }
+
+        if(isInCache) continue;
 
         if (!fields.empty() && fields[1] == accountNumber) {
             Transaction t(formatTransaction(tempString));
@@ -230,4 +254,14 @@ void TransactionLink::readFirstLine()
     }
 
     TransactionLink::padding = tempId.length();
+}
+
+int TransactionLink::getPadding()
+{
+    return padding;
+}
+
+int TransactionLink::getTransactionLimit()
+{
+    return transactionLimit;
 }

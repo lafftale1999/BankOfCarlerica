@@ -63,12 +63,20 @@ int main(void)
                 layer = chooseClient(&bank);
                 continue;
 
+            case FIND_TRANSACTION:
+                layer = findTransaction(&bank);
+                continue;
+
+            case FIND_ACCOUNT:
+                layer = findSpecificAccount(&bank);
+                continue;
+
             case NEW_CLIENT:
                 layer = newClient(&bank);
                 continue;
 
             case CHECK_ACCOUNT:
-                layer = checkAccount(&bank);
+                layer = checkAccounts(&bank);
                 continue;
 
             case CREATE_ACCOUNT:

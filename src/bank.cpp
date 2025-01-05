@@ -43,3 +43,22 @@ BankQueue<std::string, 10>& Bank::getQueue()
 {
     return queue;
 }
+
+void Bank::setCurrentTransaction(Transaction transaction)
+{
+    this->currentTransaction = transaction;
+}
+
+void Bank::setCurrentAccount(std::string accountNumber)
+{
+    this->currentAccount = this->getAccounts()->findAccount(accountNumber);
+}
+
+Transaction& Bank::getCurrentTransaction()
+{
+    return this->currentTransaction;
+}
+Account* Bank::getCurrentAccount()
+{
+    return this->currentAccount;
+}

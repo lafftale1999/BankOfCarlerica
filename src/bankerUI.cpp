@@ -10,7 +10,9 @@ MenuNavigation mainMenu()
         {0,{"Serve next client", SERVE_NEXT_CLIENT}},
         {1,{"Help specific client", CHOOSE_CLIENT}},
         {2,{"Add new client", NEW_CLIENT}},
-        {3,{"Exit", EXIT}}
+        {3,{"Find specific transaction", FIND_TRANSACTION}},
+        {4,{"Find specific account", FIND_ACCOUNT}},
+        {5,{"Exit", EXIT}}
     };
 
     printMenu(
@@ -82,6 +84,94 @@ MenuNavigation chooseClient(Bank *bank)
     return SERVE_CLIENT;
 }
 
+MenuNavigation findTransaction(Bank* bank)
+{
+    printMenu("FIND SPECIFIC TRANSACTION", "Enter the transaction id:");
+
+    int userInput;
+
+    while(true)
+    {
+        std::cin >> userInput;
+
+        // IF USER PUT IN NON NUMERIC SYMBOLS
+        if (std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Invalid input. Please enter a valid integer." << std::endl;
+            continue;
+        }
+
+        if (userInput < 0 || userInput >= bank->getTransactionLink()->getTransactionLimit()) {
+            std::cout << "Please enter a number between 0 and " << bank->getTransactionLink()->getTransactionLimit() - 1 << "." << std::endl;
+            continue;
+        }
+
+        break;
+    }
+
+    std::string temp = std::string(bank->getTransactionLink()->getPadding() - std::to_string(userInput).length(), '0') + std::to_string(userInput);
+
+    bank->setCurrentTransaction(bank->getTransactionLink()->getTransaction(temp));
+
+    if(bank->getCurrentTransaction().getID().length() == 0)
+    {
+        std::cout << "The transaction does not exist!" << std::endl;
+    }
+
+    std::cout << bank->getCurrentTransaction().getID() + " | " << bank->getCurrentTransaction().getAccountNumber() + " | " + bank->getCurrentTransaction().getAmount() + "kr | " + bank->getCurrentTransaction().getDate() << std::endl;
+
+    std::string waitingForInput;
+    std::cin >> waitingForInput;
+
+    return MAIN_MENU; 
+}
+
+MenuNavigation findSpecificAccount(Bank *bank)
+{
+    printMenu("FIND SPECIFIC ACCOUNT", "Enter the account number:");
+
+    int userInput;
+
+    while(true)
+    {
+        std::cin >> userInput;
+
+        // IF USER PUT IN NON NUMERIC SYMBOLS
+        if (std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Invalid input. Please enter a valid integer." << std::endl;
+            continue;
+        }
+
+        if (userInput < 0 || userInput >= bank->getAccounts()->getAccountLimit()) {
+            std::cout << "Please enter a number between 0 and " << bank->getAccounts()->getAccountLimit() - 1 << "." << std::endl;
+            continue;
+        }
+
+        break;
+    }
+
+    std::string temp = std::string(bank->getAccounts()->getPadding() - std::to_string(userInput).length(), '0') + std::to_string(userInput);
+
+    bank->setCurrentAccount(temp);
+
+    MenuNavigation nav = MAIN_MENU;
+
+    if(bank->getCurrentAccount() != nullptr)
+    {
+        nav = showAccount(-1, bank);
+    }
+    else
+    {
+        std::cout << "Account " << temp << " does not exist" << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+    }
+
+    return nav;
+}
+
 MenuNavigation newClient(Bank *bank)
 {
     printMenu("NEW CLIENT", "Creating new client - enter 'x' to go back!");
@@ -147,7 +237,7 @@ MenuNavigation createNewAccount(Bank *bank)
     return SERVE_CLIENT;
 }
 
-MenuNavigation checkAccount(Bank *bank)
+MenuNavigation checkAccounts(Bank *bank)
 {
     std::map<int, std::pair<std::string, MenuNavigation>> menuOptions;
 
@@ -159,7 +249,7 @@ MenuNavigation checkAccount(Bank *bank)
             break;
         }
 
-        menuOptions[i] = {bank->getCurrentClient()->getAccounts().at(i) + ' ' + std::to_string(bank->getAccounts()->findAccount(bank->getCurrentClient()->getAccounts().at(i)).getBalance()) + " kr", ACCOUNT_CHOOSEN};
+        menuOptions[i] = {bank->getCurrentClient()->getAccounts().at(i) + ' ' + std::to_string(bank->getAccounts()->findAccount(bank->getCurrentClient()->getAccounts().at(i))->getBalance()) + " kr", ACCOUNT_CHOOSEN};
     }
 
     printMenu(
@@ -169,16 +259,17 @@ MenuNavigation checkAccount(Bank *bank)
     );
 
     int userInput = getUserInputInt(menuOptions);
+    MenuNavigation nav;
 
     if((size_t)userInput < bank->getCurrentClient()->getAccounts().size())
     {
-        showAccount(userInput, bank);
+        nav = showAccount(userInput, bank);
     }
     
-    return SERVE_CLIENT;
+    return nav;
 }
 
-void showAccount(int index, Bank *bank)
+MenuNavigation showAccount(int index, Bank *bank)
 {
     std::map<int, std::pair<std::string, MenuNavigation>> menuOptions =
     {
@@ -187,15 +278,14 @@ void showAccount(int index, Bank *bank)
         {2,{"Close Account", CLOSE_ACCOUNT}},
         {3,{"Back", CHECK_ACCOUNT}}
     };
-
-    std::string accountNumber = bank->getCurrentClient()->getAccounts()[index];
-    Account &currentAccount = bank->getAccounts()->findAccount(accountNumber);
+    
+    if(index != -1) bank->setCurrentAccount(bank->getCurrentClient()->getAccounts()[index]);
 
     while(true)
     {
         printMenu(
             "CHECK YOUR ACCOUNT",
-            "Current account is " + currentAccount.getAccountNumber() + " with a balance of " + std::to_string(currentAccount.getBalance()) + "kr",
+            "Current account is " + bank->getCurrentAccount()->getAccountNumber() + " with a balance of " + std::to_string(bank->getCurrentAccount()->getBalance()) + "kr",
             menuOptions
         );
 
@@ -204,23 +294,24 @@ void showAccount(int index, Bank *bank)
         switch(nav)
         {
             case SHOW_TRANSACTIONS:
-                showTransactions(&currentAccount);
-                continue;;
+                showTransactions(bank->getCurrentAccount());
+                continue;
 
             case UPDATE_BALANCE:
-                updateBalance(&currentAccount);
+                updateBalance(bank->getCurrentAccount());
                 continue;
             
             case CLOSE_ACCOUNT:
-                bank->getCurrentClient()->removeAccount(currentAccount.getAccountNumber());
-                currentAccount.~Account();
+                bank->getCurrentClient()->removeAccount(bank->getCurrentAccount()->getAccountNumber());
+                bank->getCurrentAccount()->~Account();
 
                 std::cout << "Account closed!" << std::endl;
                 std::this_thread::sleep_for(std::chrono::seconds(2));
-                return;
+                return SERVE_CLIENT;
 
             case CHECK_ACCOUNT:
-                return;
+                if(index == -1) return MAIN_MENU;
+                return SERVE_CLIENT;
 
             default:
                 std::cout << "Something went wrong, please try again!" << std::endl;
@@ -355,7 +446,6 @@ int getUserInputInt(std::map<int, std::pair<std::string, MenuNavigation>> menuOp
 
     while(true)
     {
-
         std::cin >> userChoice;
 
         // IF USER PUT IN NON NUMERIC SYMBOLS
