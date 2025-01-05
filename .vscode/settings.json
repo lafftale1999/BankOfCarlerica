@@ -88,7 +88,7 @@
     "makefile.launchConfigurations": [
         {
             "cwd": "c:\\Users\\prett\\Desktop\\dev\\BankOfCarlerica",
-            "binaryPath": "c:\\Users\\prett\\Desktop\\dev\\BankOfCarlerica\\main.exe",
+            "binaryPath": "c:\\Users\\prett\\Desktop\\dev\\BankOfCarlerica\\BankOfCarlerica.exe",
             "binaryArgs": []
         }
     ]
