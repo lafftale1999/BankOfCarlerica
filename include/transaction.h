@@ -23,7 +23,6 @@ public:
     std::string getAmount();
     std::string getDate();
     std::string getID() const override final;
-    std::string getAccountNumber() const override final;
 };
 
 #endif

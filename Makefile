@@ -3,6 +3,8 @@ SRC = main.cpp src/account.cpp src/accountStorage.cpp src/bank.cpp src/bankerUI.
 CFLAGS = -g -Wall -Werror
 LIBS =
 CC = g++
+OBJECTS= $(SOURCES:.cpp=.o)
+BIN= BankOfCarlerica
 
 all: $(PROG)
 

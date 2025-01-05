@@ -56,8 +56,3 @@ std::string Transaction::getID() const
 {
     return this->ID;
 }
-
-std::string Transaction::getAccountNumber() const
-{
-    return this->accountNumber;
-}

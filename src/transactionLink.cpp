@@ -85,20 +85,15 @@ Transaction TransactionLink::getTransaction(std::string transactionID)
 {   
     auto begin = std::chrono::high_resolution_clock::now();
 
-    std::vector<Transaction> transactions;
-
     if(TransactionLink::transactionCache.getSize() > 0)
     {
-        for(auto t: transactionCache.searchCache(transactionID))
-        {
-            transactions.push_back(t);
-        }
-
-        if(!transactions.empty())
+        auto transaction = transactionCache.searchCache(transactionID)
+;
+        if(transaction)
         {
             auto end = std::chrono::high_resolution_clock::now();
             std::cout << "Transaction found in cache after " << std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() << " nanoseconds" << std::endl;
-            return transactions[0];
+            return *transaction;
         }
     }
 
@@ -142,16 +137,10 @@ std::vector<Transaction> TransactionLink::getTransactions(std::string accountNum
 
     std::vector<Transaction> transactionList;
 
-    for(auto t : transactionCache.searchCache(accountNumber))
-    {
-        transactionList.push_back(t);
-    }
-
     std::string tempString;
     std::ifstream file(TRANSACTIONS_PATH);
 
     while (std::getline(file, tempString)) {
-        bool isInCache = false;
 
         // Split the strings using ',' as a delimiter
         std::stringstream ss(tempString);
@@ -159,19 +148,8 @@ std::vector<Transaction> TransactionLink::getTransactions(std::string accountNum
         std::vector<std::string> fields;
 
         while (std::getline(ss, field, ',')) {
-            for(auto t: transactionList)
-            {
-                if(field == t.getID())
-                {
-                    isInCache = true;
-                    break;
-                }
-            }
-
             fields.push_back(field);
         }
-
-        if(isInCache) continue;
 
         if (!fields.empty() && fields[1] == accountNumber) {
             Transaction t(formatTransaction(tempString));

@@ -13,26 +13,21 @@ class CacheLRU
     T cache[N];
     size_t size = 0;
     size_t max_size = N;
-    size_t temporaryArraySize = 0;
 
 public:
     CacheLRU(){}
     
-    std::vector<T> searchCache(const std::string string)
+    std::optional<T> searchCache(const std::string string)
     {   
-        std::vector<T> array;
-
         for(size_t i = 0; i < size; i++)
         {
-            if(string == cache[i].getID() || string == cache[i].getAccountNumber())
+            if(string == cache[i].getID())
             {
                 addToCache(cache[i]);
-                array.push_back(cache[0]);
+                return cache[0];
             }
         }
-
-        temporaryArraySize = array.size();
-        return array;
+        return std::nullopt;
     }
 
     void addToCache(T item)
