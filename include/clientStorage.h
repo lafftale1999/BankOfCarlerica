@@ -4,6 +4,7 @@
 #include "client.h"
 
 #define CLIENT_PATH "data/clients/clients.txt"
+#define CLIENT_TOKENS 4
 
 class ClientStorage
 {

@@ -372,7 +372,6 @@ void updateBalance(Account* account)
 // WITH MENU OPTIONS
 void printMenu(std::string headline, std::string message, std::map<int, std::pair<std::string, MenuNavigation>> menuOptions)
 {
-
     system("cls");
 
     if(!headline.empty())
