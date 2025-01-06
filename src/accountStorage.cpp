@@ -3,6 +3,7 @@
 #include <fstream>
 #include <chrono>
 #include <sstream>
+#include <algorithm>
 
 AccountStorage::AccountStorage(){}
 
@@ -12,13 +13,9 @@ AccountStorage::AccountStorage(int accountLimit)
     loadAccountsFromFile();
 
     if(accounts.size() > 0)
-    {
         padding = accounts["00000000"].getAccountNumber().length();
-    }
     else
-    {
         padding = std::to_string(accountLimit).length();
-    }
 }
 
 AccountStorage::~AccountStorage()
@@ -121,11 +118,11 @@ void AccountStorage::writeAccountsToFile()
         return;
     }
 
-    for(auto a : accounts)
-    {
-        if(a.second.getAccountNumber().empty()) continue;
-        file << a.second.getAccountNumber() << "," << a.second.getBalance() << std::endl;
-    }
+    std::for_each(std::begin(accounts), std::end(accounts), [&file](auto &account) {
+        if (!account.second.getAccountNumber().empty()) {
+            file << account.second.getAccountNumber() << "," << account.second.getBalance() << std::endl;
+        }
+    });
 
     file.close();
 

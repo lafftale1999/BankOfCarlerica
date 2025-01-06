@@ -38,6 +38,7 @@ std::vector<Transaction> TransactionLink::getCurrentTransactions()
 void TransactionLink::init()
 {
     readTransactionsFromFile();
+    readFirstLine();
 }
 
 void TransactionLink::addTransaction(std::string amount, std::string accountNumber)

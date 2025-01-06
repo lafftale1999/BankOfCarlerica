@@ -6,6 +6,7 @@
 #include <chrono>
 #include <cmath>
 #include <thread>
+#include <algorithm>
 
 ClientStorage::ClientStorage(){};
 
@@ -13,15 +14,9 @@ ClientStorage::ClientStorage(int maxLimit)
 {
     this->maxLimit = maxLimit;
     loadClientsFromFile();
-    if(clients.size() > 0)
-    {
-        padding = clients[0].getClientId().length();
-    }
 
-    else
-    {
-        padding = std::to_string(maxLimit).length();
-    }
+    if(clients.size() > 0) padding = clients[0].getClientId().length();
+    else padding = std::to_string(maxLimit).length();
 }
 
 ClientStorage::~ClientStorage()
@@ -34,7 +29,6 @@ void ClientStorage::addClient(std::string firstName, std::string lastName, std::
     if(clients.size() < (size_t)maxLimit)
     {
         std::string id = std::string(padding - std::to_string(clients.size()).length(), '0') + std::to_string(clients.size());
-
         clients.emplace_back(id, firstName, lastName, accounts);
     }
 
@@ -141,20 +135,21 @@ void ClientStorage::saveClientsToFile()
         return;
     }
 
-    for (auto c : clients)
+    std::for_each(std::begin(clients), std::end(clients),[&file](auto &c)
     {
-        if(c.getClientId().empty()) continue;
-
-        file << c.getClientId() + ',' + c.getFirstName() + ',' + c.getLastName() + ',';
-
-        for(size_t i = 0; i < c.getAccounts().size(); i++)
+        if(!c.getClientId().empty())
         {
-            if(i == c.getAccounts().size() - 1) file << c.getAccounts()[i] + ',';
-            else file << c.getAccounts()[i] + '|';
-        }
+            file << c.getClientId() + ',' + c.getFirstName() + ',' + c.getLastName() + ',';
 
-        file << std::endl;
-    }
+            for(size_t i = 0; i < c.getAccounts().size(); i++)
+            {
+                if(i == c.getAccounts().size() - 1) file << c.getAccounts()[i] + ',';
+                else file << c.getAccounts()[i] + '|';
+            }
+
+            file << std::endl;
+        }
+    });
 
     file.close();
 

@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <string>
+#include <algorithm>
 
 MenuNavigation mainMenu()
 {   
@@ -388,10 +389,14 @@ void printMenu(std::string headline, std::string message, std::map<int, std::pai
 
     if(!menuOptions.empty())
     {
-        for(auto i = menuOptions.begin(); i != menuOptions.end(); i++)
+        std::for_each(std::begin(menuOptions), std::end(menuOptions),[](auto const &option){
+            std::cout << option.first << ". " << option.second.first << std::endl;
+        });
+
+        /* for(auto i = menuOptions.begin(); i != menuOptions.end(); i++)
         {
             std::cout << i->first << ". " << i->second.first << std::endl;
-        }
+        } */
     }
 }
 
