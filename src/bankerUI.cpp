@@ -361,7 +361,7 @@ void updateBalance(Account* account)
 
     if(userInput != 0)
     {
-        SuccessMessage balanceUpdated = account->updateBalance(userInput);
+        SuccessMessage balanceUpdated = account->updateBalance((userInput));
 
         if(balanceUpdated == BALANCE_UPDATED) std::cout << "Account balance has been updated" << std::endl;
         else if(balanceUpdated == BALANCE_TOO_LOW) std::cout << "Failed to update account balance" << std::endl;
