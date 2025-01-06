@@ -48,7 +48,7 @@ void TransactionLink::addTransaction(std::string amount, std::string accountNumb
 
     std::ostringstream dateTimeStream;
     dateTimeStream << std::put_time(&localTime, "%Y-%m-%d %H:%M:%S");
-
+    
     std::string ID = std::string(padding - std::to_string(TransactionLink::transactionCount).length(), '0') + std::to_string(TransactionLink::transactionCount);
      
     Transaction transaction(amount, dateTimeStream.str(), ID, accountNumber);
