@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 #include <chrono>
+#include <sstream>
 
 AccountStorage::AccountStorage(){}
 
@@ -74,37 +75,30 @@ void AccountStorage::loadAccountsFromFile()
 
     int counter = 0;
     std::string temp;
-    std::vector<std::string>accountInformation(2);
-    // [0] == ID
-    // [1] == BALANCE
-
-    int index = 0;
 
     while(std::getline(file, temp))
     {   
-        if(counter > accountLimit)
+        if(counter >= accountLimit)
         {
             std::cout << "Account limit has been reached while reading from file" << std::endl;
             return;
         }
+        int index = 0;
 
-        accountInformation[0] = "";
-        accountInformation[1] = "";
+        std::string token;
+        std::vector<std::string>accountInformation(ACCOUNT_TOKENS);
+        // [0] == ID
+        // [1] == BALANCE
 
-        for(size_t i = 0; i < temp.length(); i++)
+        std::stringstream stringStream(temp);
+
+        while(std::getline(stringStream, token, ','))
         {
-            if(temp[i] == ',')
-            {
-                index++;
-                continue;
-            }
-
-            accountInformation[index].push_back(temp[i]);
+            if(index < ACCOUNT_TOKENS) accountInformation[index++] = token;
+            else break;
         }
 
         addAccount(accountInformation[0], accountInformation[1]);
-
-        index = 0;
         counter++;
     }
 

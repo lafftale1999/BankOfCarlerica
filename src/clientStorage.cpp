@@ -1,4 +1,6 @@
 #include "../include/clientStorage.h"
+#include <sstream>
+#include <iostream>
 #include <string>
 #include <fstream>
 #include <chrono>
@@ -48,26 +50,26 @@ Client* ClientStorage::findClient(std::string clientID)
     std::cout << "Looking for client" << std::endl;
     auto begin = std::chrono::high_resolution_clock::now();
 
-    int s = 0;
-    int e = this->clients.size() - 1;
+    int start = 0;
+    int end = this->clients.size() - 1;
 
-    int c;
+    int mid;
 
-    while (s <= e)
+    while (start <= end)
     {
-        c = (s + e) / 2;
+        mid = (start + end) / 2;
 
-        if(clientID == clients[c].getClientId())
+        if(clientID == clients[mid].getClientId())
         {
-            auto end = std::chrono::high_resolution_clock::now();
-            std::cout << "Finding client took: " << std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() << " nanoseconds" << std::endl;
+            auto finish = std::chrono::high_resolution_clock::now();
+            std::cout << "Finding client took: " << std::chrono::duration_cast<std::chrono::nanoseconds>(finish - begin).count() << " nanoseconds" << std::endl;
             std::this_thread::sleep_for(std::chrono::seconds(2));
 
-            return &clients[c];
+            return &clients[mid];
         }
 
-        else if(clientID < clients[c].getClientId()) e = c - 1;
-        else if(clientID > clients[c].getClientId()) s = c + 1;
+        else if(clientID < clients[mid].getClientId()) end = mid - 1;
+        else if(clientID > clients[mid].getClientId()) start = mid + 1;
     }
 
     std::cout << "Could not find client id " << clientID << std::endl;
@@ -95,28 +97,25 @@ void ClientStorage::loadClientsFromFile()
     }
 
     std::string tempString;
-    int index = 0;
 
     while(std::getline(file, tempString))
     {
-        std::vector<std::string> temp(4);
+        int index = 0;
+        std::string token;
+
+        std::vector<std::string> temp(CLIENT_TOKENS);
         // 0 = id
         // 1 = firstName
         // 2 = lastName
         // 3 = accounts
 
-        for(size_t i = 0; i < tempString.length(); i++)
+        std::stringstream stringStream(tempString);
+
+        while(std::getline(stringStream, token, ','))
         {
-            if(tempString[i] == ',')
-            {
-                index++;
-                continue;
-            }
-
-            temp[index].push_back(tempString[i]);
+            if(index < CLIENT_TOKENS) temp[index++] = token;
+            else break;
         }
-
-        std::string accounts = temp[3];
         
         // 0 = id | 1 = fname | 2 = lname | 3 = accounts
         clients.emplace_back(temp[0], temp[1], temp[2], temp[3]);

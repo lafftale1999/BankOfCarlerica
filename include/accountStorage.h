@@ -6,6 +6,7 @@
 #include <map>
 
 #define ACCOUNTS_PATH "data/accounts/accounts.txt"
+#define ACCOUNT_TOKENS 2
 
 class AccountStorage
 {
