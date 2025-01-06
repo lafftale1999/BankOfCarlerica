@@ -35,14 +35,14 @@ SuccessMessage Account::updateBalance(float amount)
     if((this->balance + amount) < 0)
     {
         std::cout << "Unable to withdraw " << amount << "kr from this account with " << this->balance << "kr!" << std::endl;
-        return FAILED;
+        return BALANCE_TOO_LOW;
     }
 
     this->balance += amount;
     TransactionLink transactionLink;
     transactionLink.addTransaction(std::to_string(amount), this->accountNumber);
 
-    return SUCCESS;
+    return BALANCE_UPDATED;
 }
 
 std::string Account::getAccountNumber()

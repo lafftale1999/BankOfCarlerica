@@ -363,8 +363,8 @@ void updateBalance(Account* account)
     {
         SuccessMessage balanceUpdated = account->updateBalance(userInput);
 
-        if(balanceUpdated == SUCCESS) std::cout << "Account balance has been updated" << std::endl;
-        else if(balanceUpdated == FAILED) std::cout << "Failed to update account balance" << std::endl;
+        if(balanceUpdated == BALANCE_UPDATED) std::cout << "Account balance has been updated" << std::endl;
+        else if(balanceUpdated == BALANCE_TOO_LOW) std::cout << "Failed to update account balance" << std::endl;
 
         std::this_thread::sleep_for(std::chrono::seconds(2));
     }
@@ -392,11 +392,6 @@ void printMenu(std::string headline, std::string message, std::map<int, std::pai
         std::for_each(std::begin(menuOptions), std::end(menuOptions),[](auto const &option){
             std::cout << option.first << ". " << option.second.first << std::endl;
         });
-
-        /* for(auto i = menuOptions.begin(); i != menuOptions.end(); i++)
-        {
-            std::cout << i->first << ". " << i->second.first << std::endl;
-        } */
     }
 }
 

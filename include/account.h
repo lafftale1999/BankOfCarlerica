@@ -5,8 +5,8 @@
 
 typedef enum
 {
-    SUCCESS,
-    FAILED
+    BALANCE_UPDATED,
+    BALANCE_TOO_LOW
 } SuccessMessage;
 
 class Account
