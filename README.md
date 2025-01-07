@@ -28,6 +28,6 @@ This is a project aimed at learning more about search algorithms and datastructu
 - Compiler: G++
 
 ## 4. User Instructions
-If it's the first time using the program, make sure that the files transactions.txt, clients.txt and accounts.txt contains datat. Otherwhise uncomment GenerateClients in main.cpp and let it do some magic stuff. This will take some time, maybe a minute or two depending or you computerado.
+If it's the first time using the program, make sure that the files transactions.txt, clients.txt and accounts.txt contains data. If that's the case, just run the BankOfCarlerica.exe file in the root directory of the project. Otherwhise uncomment GenerateClients in main.cpp and let it do some magic stuff. This will take some time, maybe a minute or two depending or you computerado.
   
 The program contains an easily navigated menu using a numbered list and user input. All choices will be made between 0 - N and then "Enter".
